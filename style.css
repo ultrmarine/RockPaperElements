@@ -1,0 +1,123 @@
+body {
+    background: radial-gradient(circle, #3a3a3a, #0a0a0a);
+    
+}
+.title-name{
+    color: antiquewhite;
+    text-align: center;
+}
+
+
+
+/* cтартовый экран */
+.start-screen {
+
+}
+
+button:hover {
+    background-color: #2666cc;
+}
+
+/* игровой экран */
+#game-screen {
+    
+}
+
+.div-avatar{
+    position: relative;
+    background: white;
+    margin: 30px;
+    width: 300px;
+    height: 300px;
+    border: 5px red solid;
+}
+
+.div-hp{
+    position: relative;
+    margin: 20px;
+    height: 100px;
+}
+
+.div-round{
+    position: absolute;
+    background: white;
+    border: red 5px solid;
+    left: 45%;
+    width: 150px;
+    height: 100px;
+}
+
+.text-round{
+    position: relative;
+    text-align: center;
+    top: -10px;
+}
+
+.text-round-count{
+    position: relative;
+    text-align: center;
+    top: -30px;
+}
+
+.img-hp{
+    margin: 10px;
+    width: 100px;
+}
+
+.div-nickname{
+    position: absolute;
+    background: white;
+    border: red solid 5px;
+    width: 350px;
+    height: 100px;
+    top: 238px;
+    left: 400px;
+}
+
+.div-skills{
+    position: absolute;
+    background: white;
+    border: red 5px solid;
+    width: 711px;
+    height: 450px;
+    margin: 30px;
+    top: 400px;
+}
+
+.div-mana{
+    position: absolute;
+    background: linear-gradient(pink, blue);
+    border: red 5px solid;
+    width: 90px;
+    height: 450px;
+    margin: 30px;
+    left: 750px;
+    top: 400px;
+}
+
+.div-timer{
+    position: absolute;
+    background: white;
+    border: red 5px solid;
+    width: 200px;
+    height: 75px;
+    left: 85%;
+}
+
+.text-timer{
+    text-align: center;
+}
+
+#confirm-btn{
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    left: 85%;
+    top: 90%;
+}
+
+.div-gesture{
+    position: absolute;
+    left: 55%;
+    top: 10%;
+}
