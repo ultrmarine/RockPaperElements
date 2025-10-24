@@ -20,6 +20,7 @@
     <div id="pre-game-screen" style="display: none;" >
         <button id="play-btn">PLAY</button>
         <button id="close-pre-game-screen">BACK</button>
+        <input id="nick-input" type="text">
     </div>
 
 
@@ -43,7 +44,7 @@
 
         <!-- див с ником игрока -->
         <div class="div-nickname">
-            <h1 class="text-nickname">HELLoo your nickname here</h1>
+            <h1 id="text-nickname">nickname</h1>
         </div>
         <!-- див со всеми скиллами -->
         <div class="div-skills">
@@ -55,29 +56,33 @@
         </div>
         <!-- див с временем -->
         <div class="div-timer">
-            <h1 class="text-timer">TIME: 60S </h1>
+            <h1 id="text-timer">TIME: 60 s </h1>
         </div>
         
         <button id="confirm-btn">Сonfirm</button>
 
         <div class="div-gesture">
-            <button id="btn-gesture1">Камень</button>
-            <button id="btn-gesture2">Огонь</button>
-            <button id="btn-gesture3">Ножницы</button>
-            <button id="btn-gesture4">Змея</button>
-            <button id="btn-gesture5">Человек</button>
-            <button id="btn-gesture6">Дерево</button>
-            <button id="btn-gesture7">Волк</button>
-            <button id="btn-gesture8">Губка</button>
-            <button id="btn-gesture9">Бумага</button>
-            <button id="btn-gesture10">Воздух</button>
-            <button id="btn-gesture11">Вода</button>
-            <button id="btn-gesture12">Взрыв</button>
-            <button id="btn-gesture13">Дракон</button>
-            <button id="btn-gesture14">Дьявол</button>
-            <button id="btn-gesture15">Молния</button>
-            <button id="btn-gesture16">Пистолет</button>
+            <button id="btn-gesture1" data-gesture="rock">Камень</button>
+            <button id="btn-gesture2" data-gesture="fire">Огонь</button>
+            <button id="btn-gesture3" data-gesture="scissors">Ножницы</button>
+            <button id="btn-gesture4" data-gesture="snake">Змея</button>
+            <button id="btn-gesture5" data-gesture="person">Человек</button>
+            <button id="btn-gesture6" data-gesture="tree">Дерево</button>
+            <button id="btn-gesture7" data-gesture="wolf">Волк</button>
+            <button id="btn-gesture8" data-gesture="sponge">Губка</button>
+            <button id="btn-gesture9" data-gesture="paper">Бумага</button>
+            <button id="btn-gesture10" data-gesture="air">Воздух</button>
+            <button id="btn-gesture11" data-gesture="water">Вода</button>
+            <button id="btn-gesture12" data-gesture="boom">Взрыв</button>
+            <button id="btn-gesture13" data-gesture="dragon">Дракон</button>
+            <button id="btn-gesture14" data-gesture="devil">Дьявол</button>
+            <button id="btn-gesture15" data-gesture="lightning">Молния</button>
+            <button id="btn-gesture16" data-gesture="pistol">Пистолет</button>
         </div>
+
+        <h1 id="text-player-choice">
+            Твой выбор: >>>
+        </h1>
 
         <div id="round-screen" style="display: none;">
             <h1 id="text-round-screen">Конец 335 раунда</h1>

@@ -117,7 +117,7 @@ button:hover {
     left: 85%;
 }
 
-.text-timer{
+#text-timer{
     text-align: center;
 }
 
@@ -156,4 +156,22 @@ button:hover {
 
 #text-round-total{
     position: relative;
+}
+
+#text-player-choice{
+    position: absolute;
+    color: white;
+    top: 88%;
+    left: 55%;
+}
+
+#nick-input{
+    background-color: black;
+    color: white;
+}
+
+#text-nickname{
+    position: relative;
+    text-align: center;
+    top: 10px;
 }
