@@ -21,6 +21,11 @@
         <button id="play-btn">PLAY</button>
         <button id="close-pre-game-screen">BACK</button>
         <input id="nick-input" type="text">
+        <select name="avatarSelect" id="avatar-select">
+            <option value="skeleton">Скелет</option>
+            <option value="wizard">Волшебник</option>
+            <option value="elemental">Элементаль</option>
+        </select>
     </div>
 
 
@@ -28,17 +33,24 @@
 <!-- Игровое окошечко -->
     <div id="game-screen" style="display: none;">
         <!-- Див под аватарки -->
-        <div class="div-avatar"></div>
+        <div class="div-avatar">
+            <img id="avatar-img" src="assets\avatars\skeleton1.jpg">
+
+        </div>
         <!-- див с картинками хп -->
         <div class="div-hp">
-            <img class="img-hp" src="assets\icons\red-hp.png">
-            <img class="img-hp" src="assets\icons\red-hp.png">
-            <img class="img-hp" src="assets\icons\red-hp.png">
+            <img class="img-hp" id="third-hp" src="assets\icons\red-hp.png">
+            <img class="img-hp" id="second-hp" src="assets\icons\red-hp.png">
+            <img class="img-hp" id="first-hp" src="assets\icons\red-hp.png">
+        </div>
+
+        <div class="div-bot-hp">
+            <h1 id="bot-hp">BOT HP 6</h1>
         </div>
         <!-- див который показывает раунд -->
         <div class="div-round">
             <h1 class="text-round">ROUND</h1>
-            <h1 class="text-round-count">336</h1>
+            <h1 id="text-round-count">0</h1>
         </div>
 
 
@@ -88,6 +100,12 @@
             <h1 id="text-round-screen">Конец 335 раунда</h1>
             <h1 id="text-enemy-move">Противник сыграл ладошку</h1>
             <h1 id="text-round-total">Ты победил ну или проиграл я хз</h1>
+
+            <h1 id="text-timer-round-screen">TIME: 5 s </h1>
+        </div>
+
+        <div id="lose-win-screen" style="display: none;">
+            <h1 id="lose-win-text">Ты проиграл</h1>
         </div>
 
     </div>
