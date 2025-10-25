@@ -98,6 +98,10 @@ button:hover {
     top: 400px;
 }
 
+.skills-btn{
+    position: relative;
+}
+
 .div-mana{
     position: absolute;
     background: linear-gradient(pink, blue);
@@ -107,6 +111,18 @@ button:hover {
     margin: 30px;
     left: 750px;
     top: 400px;
+}
+
+#div-mana-count{
+    position: relative;
+    background-color: white;
+    width: 90px;
+    height: 350px;
+}
+
+#text-mana-count{
+    text-align: center;
+    color: white;
 }
 
 .div-timer{
