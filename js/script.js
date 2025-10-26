@@ -109,22 +109,22 @@ let textRoundCount = document.getElementById("text-round-count")
 let roundCount = 1
 
 const gesture_wins = {
-    "rock": ["fire","scissors","snake","person","tree","wolf","sponge",  "group1"],
-    "fire": ["scissors","snake","person","tree","wolf","sponge","paper",  "group1"],
-    "scissors": ["snake","person","tree","wolf","sponge","paper","air",  "group1"],
-    "snake": ["person","tree","wolf","sponge","paper","air","water",  "group1"],
-    "person": ["tree","wolf","sponge","paper","air","water","boom",  "group2"],
-    "tree": ["wolf","sponge","paper","air","water","boom","dragon",  "group2"],
-    "wolf": ["sponge","paper","air","water","boom","dragon","devil",  "group2"],
-    "sponge": ["paper","air","water","boom","dragon","devil","lightning",  "group2"],
-    "paper": ["air","water","boom","dragon","devil","lightning","pistol",  "group3"],
-    "air": ["water","boom","dragon","devil","lightning","pistol","rock",  "group3"],
-    "water": ["boom","dragon","devil","lightning","pistol","rock","fire",  "group3"],
-    "boom": ["dragon","devil","lightning","pistol","rock","fire","scissors",  "group3"],
-    "dragon": ["devil","lightning","pistol","rock","fire","scissors","snake",  "group4"],
-    "devil": ["lightning","pistol","rock","fire","scissors","snake","person",  "group4"],
-    "lightning": ["pistol","rock","fire","scissors","snake","person","tree",  "group4"],
-    "pistol": ["rock","fire","scissors","snake","person","tree","wolf",  "group4"]
+    "rock": ["fire","scissors","snake","person","tree","wolf","sponge","paper", "group1"],
+    "fire": ["scissors","snake","person","tree","wolf","sponge","paper","air",  "group1"],
+    "scissors": ["snake","person","tree","wolf","sponge","paper","air","water",  "group1"],
+    "snake": ["person","tree","wolf","sponge","paper","air","water","boom",  "group1"],
+    "person": ["tree","wolf","sponge","paper","air","water","boom","dragon",  "group2"],
+    "tree": ["wolf","sponge","paper","air","water","boom","dragon","devil",  "group2"],
+    "wolf": ["sponge","paper","air","water","boom","dragon","devil","lightning",  "group2"],
+    "sponge": ["paper","air","water","boom","dragon","devil","lightning","pistol",  "group2"],
+    "paper": ["air","water","boom","dragon","devil","lightning","pistol","rock",  "group3"],
+    "air": ["water","boom","dragon","devil","lightning","pistol","rock","fire",  "group3"],
+    "water": ["boom","dragon","devil","lightning","pistol","rock","fire","scissors",  "group3"],
+    "boom": ["dragon","devil","lightning","pistol","rock","fire","scissors","snake",  "group3"],
+    "dragon": ["devil","lightning","pistol","rock","fire","scissors","snake","person",  "group4"],
+    "devil": ["lightning","pistol","rock","fire","scissors","snake","person","tree",  "group4"],
+    "lightning": ["pistol","rock","fire","scissors","snake","person","tree","wolf",  "group4"],
+    "pistol": ["rock","fire","scissors","snake","person","tree","wolf","sponge",  "group4"]
 }
 
 const firstHp = document.getElementById("first-hp")
