@@ -84,7 +84,7 @@ button:hover {
     border: red solid 5px;
     width: 350px;
     height: 100px;
-    top: 238px;
+    top: 188px;
     left: 400px;
 }
 
@@ -217,4 +217,28 @@ button:hover {
 
 #avatar-img{
     height: 400px;
+}
+
+#div-first-skill{
+    position: relative;
+    width: 300px;
+    height: 100px;
+    border: red 5px solid;
+    background-color: gray;
+}
+
+.div-applied-skill{
+    position: absolute;
+    left: 400px;
+    top: 310px;
+    width: 470px;
+    height: 100px;
+    background-color: white;
+    border:5px red solid;
+}
+
+#text-applied-skill{
+    position: relative;
+    text-align: center;
+    top: 10px;
 }

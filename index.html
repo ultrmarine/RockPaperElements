@@ -58,12 +58,22 @@
         <div class="div-nickname">
             <h1 id="text-nickname">nickname</h1>
         </div>
+
+        <div class="div-applied-skill">
+            <h1 id="text-applied-skill">No skills applied</h1>
+        </div>
+
         <!-- див со всеми скиллами -->
         <div class="div-skills">
-            <button class="skills-btn">Заблокать первую группу скилов skill</button>
-            <button class="skills-btn">Заблокать вторую группу скилов skill</button>
-            <button class="skills-btn">Заблокать третью группу скилов skill</button>
-            <button class="skills-btn">Заблокать четвёртую группу скилов skill</button>
+            <button id="first-skill-btn">Заблокировать противнику одну из чётырёх групп жестов на следующий ход - 4 маны</button>
+            <div id="div-first-skill" style="display: none;">
+                <button class="first-skills-btn">Первую группу жестов</button>
+                <button class="first-skills-btn">Вторую группу жестов</button>
+                <button class="first-skills-btn">Третью группу жестов</button>
+                <button class="first-skills-btn">Четвёртую группу жестов</button>
+            </div>
+
+            <button id="second-skill-btn">Увеличить свой урон на 1,но и проходящий по себе урон на 1 на этот раунд - 3 маны</button>
         </div>
         <!-- див с маной -->
         <div class="div-mana">
@@ -114,6 +124,8 @@
 
     </div>
 
-<script src="script.js"></script>
+<script src="js\script.js"></script>
+<script src="js\bot.js"></script>
+<script src="js\manaSkills.js"></script>
 </body>
 </html>
