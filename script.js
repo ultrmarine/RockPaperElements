@@ -314,7 +314,7 @@ function botHpLose(){
 // }, "1000")
 
 
-// всё что связано с маной
+// всё что связано с маной и способностями
 const divManaCount = document.getElementById("div-mana-count")
 const textManaCount = document.getElementById("text-mana-count")
 
