@@ -57,29 +57,27 @@ closePreGameScreen.addEventListener('click', () => {
 
 const textAppliedSkill = document.getElementById("text-applied-skill")
 
-// мне сверх не нравиться миллион if,надо чёт придумать
-function textSkills(){
-    if(selectSkill == 0){
-        textAppliedSkill.innerHTML = "No skills applied"
-        textAppliedSkill.style.top = "0px"
-        textAppliedSkill.style.fontSize = "40px"
-    } else if(selectSkill == 1){
-        textAppliedSkill.innerHTML = "На следующий раунд заблокирована 1 группа жестов"
-        textAppliedSkill.style.top = "-10px"
-    } else if(selectSkill == 2){
-        textAppliedSkill.innerHTML = "На следующий раунд заблокирована 2 группа жестов"
-        textAppliedSkill.style.top = "-10px"
-    } else if(selectSkill == 3){
-        textAppliedSkill.innerHTML = "На следующий раунд заблокирована 3 группа жестов"
-        textAppliedSkill.style.top = "-10px"
-    } else if(selectSkill == 4){
-        textAppliedSkill.innerHTML = "На следующий раунд заблокирована 4 группа жестов"
-        textAppliedSkill.style.top = "-10px"
-    } else if(selectSkill == 5){
-        textAppliedSkill.innerHTML = "На этот раунд ваш урон и проходящий по вам урон увеличен"
-        textAppliedSkill.style.top = "-20px"
-        textAppliedSkill.style.fontSize = "30px"
+
+function textSkills(){ 
+    let top = "0px"
+    let fontSize = "25px"
+
+    if (selectSkill == 0) {
+        text = "No skills applied"
+        top = "0px"
+        fontSize = "40px"
+    } else if (selectSkill >= 1 && selectSkill <= 4) {
+        // та же самая тема,что и в питоне,только нужны эти ублюдские скобки который я не знаю как ставить на английской клаве
+        text = `На следующий раунд заблокирована ${selectSkill} группа жестов`
+    } else if (selectSkill == 5) {
+        text = "На этот раунд ваш урон и проходящий по вам урон увеличен на 1 "
+        top = "-20px"
+        fontSize = "30px"
     }
+
+    textAppliedSkill.innerHTML = text;
+    textAppliedSkill.style.top = top;
+    textAppliedSkill.style.fontSize = fontSize;
 }
 
 // Чё та пока что не нужно
@@ -189,7 +187,6 @@ confirmBtn.addEventListener('click', () => {
             if (gesture_wins[playerGestureChoice].includes(botChooseGesture1)){
                 textRoundTotal.innerHTML = "Ты выйграл"
                 botHpLose()
-
             } else{
                 textRoundTotal.innerHTML = "Ты проиграл вамп вамп"
                 playerHpLose()
@@ -202,23 +199,12 @@ confirmBtn.addEventListener('click', () => {
 
 // простейшая функция таймера,если таймер заканчивается,а игрок ничё не выбрал - пикает камень
 function roundTimer(){
-    if (selectSkill == 1){
-        botChooseGesture1 = botChooseGesture("group1")
+    if (selectSkill >= 1 && selectSkill <= 4) {
+        botChooseGesture1 = botChooseGesture(`group${selectSkill}`)
+        // console.log(`TETSTETESTET group${selectSkill}`)
         selectSkill = 0
-        console.log("Virubili 1")
-    } else if(selectSkill == 2){
-        botChooseGesture1 = botChooseGesture("group2")
-        selectSkill = 0
-        console.log("Virubili 2")
-    } else if(selectSkill == 3){
-        botChooseGesture1 = botChooseGesture("group3")
-        selectSkill = 0
-        console.log("Virubili 3")
-    } else if(selectSkill == 4){
-        botChooseGesture1 = botChooseGesture("group4")
-        selectSkill = 0
-        console.log("Virubili 4")
-    } else{
+        textSkills()
+    } else {
         botChooseGesture1 = botChooseGesture()
     }
     // console.log(botChooseGesture1)
@@ -255,6 +241,8 @@ function endRoundTimer(){
     }, "1000")
 }
 
+
+// это всё желательно сократить,ну я вообще не представляю как
 function playerHpLose(){
     if (selectSkill == 5){
         playerHp -= 2
@@ -262,6 +250,7 @@ function playerHpLose(){
     } else{
         playerHp -= 1
     }
+
     if (playerHp == 5){
         // я 20 минут потратил,что бы понять что js не воспринимает нормально \ - вот такие базовые для путей слэши :)))))))))
         firstHp.src = "assets/icons/half-red-hp.png"

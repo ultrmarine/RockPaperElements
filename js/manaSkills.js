@@ -58,6 +58,7 @@ skillsBtn[0].addEventListener("click", () => {
         alert("Уже применён другой скилл!")
     }
     calcMana()
+    textSkills()
 })
 
 skillsBtn[1].addEventListener("click", () => {
@@ -99,7 +100,7 @@ skillsBtn[3].addEventListener("click", () => {
     textSkills()
 })
 
-// СПОСОБНОСТЬ УВЕЛИЧЕНИЯ ДЕМАДЖА
+// СПОСОБНОСТЬ УВЕЛИЧЕНИЯ ДЕМАДЖА ПО БОТУ И ИГРОКУ
 
 const secondSkillBtn = document.getElementById("second-skill-btn")
 

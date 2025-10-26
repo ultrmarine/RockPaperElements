@@ -12,3 +12,5 @@ function botChooseGesture(Group) {
     const random = Math.floor(Math.random() * availGestures.length)
     return availGestures[random]
 }
+
+// сделать ему возможность выбирать способности
