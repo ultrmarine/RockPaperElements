@@ -109,7 +109,6 @@ let textRoundCount = document.getElementById("text-round-count")
 let roundCount = 1
 
 
-// Думать и фиксить эту проблему
 const gesture_wins = {
     "rock": ["fire","scissors","snake","person","tree","wolf","sponge","paper", "group1"],
     "fire": ["scissors","snake","person","tree","wolf","sponge","paper","air",  "group1"],
@@ -185,19 +184,25 @@ confirmBtn.addEventListener('click', () => {
             endRoundTimer()
         }
         textEnemyMove.innerHTML = "Противник сыграл " + botChooseGesture1
+
+
         if (playerGestureChoice == botChooseGesture1){
             textRoundTotal.innerHTML = "У вас ничья"
+
+        } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice)){
+            //доработать
+            textRoundTotal.innerHTML = "Сыграны равные по силе жесты вы оба теряете hp"
+            playerHpLose()
+            botHpLose()
+        } else if (gesture_wins[playerGestureChoice].includes(botChooseGesture1)){
+            textRoundTotal.innerHTML = "Ты выйграл"
+            botHpLose()
         } else{
-            if (gesture_wins[playerGestureChoice].includes(botChooseGesture1)){
-                textRoundTotal.innerHTML = "Ты выйграл"
-                botHpLose()
-            } else{
-                textRoundTotal.innerHTML = "Ты проиграл вамп вамп"
-                playerHpLose()
-            }
+            textRoundTotal.innerHTML = "Ты проиграл вамп вамп"
+            playerHpLose()
         }
     } else{
-        alert("Для подтверждения нужно выбрать жест") //потом заменить алёрт на pop окно
+        alert("Для подтверждения нужно выбрать жест") //потом заменить алёрт на pop окно по желанию конечно
     }
 })
 
@@ -211,7 +216,6 @@ function roundTimer(){
     } else {
         botChooseGesture1 = botChooseGesture()
     }
-    // console.log(botChooseGesture1)
     textRoundCount.innerHTML = roundCount
     let defaultTimer = 60
     intervalTimer = setInterval(() => {
@@ -246,42 +250,11 @@ function endRoundTimer(){
 }
 
 const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
-// console.log(hp[2])
-// let test = 6
-// console.log((test % 2))
-// console.log((test / 2))
-// test = 5
-// console.log((test % 2))
-// console.log((test / 2))
-// test = 2
-// console.log((test % 2))
-// console.log((test / 2))
-
-// const testHp = {
-//         5: [hp[0],hp[0],hp[1]],
-//         4: [hp[0],hp[0],hp[2]],
-//         3: [hp[0],hp[1],hp[2]],
-//         2: [hp[0],hp[2],hp[2]],
-//         1: [hp[1],hp[2],hp[2]],
-// }
-
-// console.log(testHp[1][0])
-const testHp = {
-        6: [hp[0],hp[0],hp[0]],
-        5: [hp[0],hp[0],hp[1]],
-        4: [hp[0],hp[0],hp[2]],
-        3: [hp[0],hp[1],hp[2]],
-        2: [hp[0],hp[2],hp[2]],
-        1: [hp[1],hp[2],hp[2]],
-}
-
-console.log(testHp[5][2])
 
 function hpAvatar(){
     //горжусь что смог это сократить
     const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
     
-    // let halfHp = playerHp % 2 
     let avatar = ["assets/avatars/skeleton1.jpg","assets/avatars/skeleton2.jpg","assets/avatars/skeleton3.jpg"]
 
     if (selectImg.value == "wizard"){
@@ -306,8 +279,6 @@ function hpAvatar(){
             thirdHp.src = testHp[i][2]
             avatarImg.src = testHp[i][3]
             break
-            alert(i)
-            console.log("Hp " + playerHp)
         } else if (playerHp <= 0) {
             firstHp.src = hp[2]
             secondHp.src = hp[2]
@@ -318,91 +289,7 @@ function hpAvatar(){
             },5500)
         }
     }
-    // if (playerHp == 6){
-    //     firstHp.src = hp[0]
-    //     secondHp.src = hp[0]
-    //     thirdHp.src = hp[0]
-    // } else if(playerHp <= 5 && playerHp >=1){
-    //     if (halfHp != 2){
-
-    //     }
-    // } else {
-    //     firstHp.src = hp[2]
-    //     secondHp.src = hp[2]
-    //     thirdHp.src = hp[2]
-    //     setTimeout(() => {
-    //         lose()
-    //     },5500)
-    // }
-
-
-
-    // if (playerHp == 5){
-    //     // я 20 минут потратил,что бы понять что js не воспринимает нормально \ - вот такие базовые для путей слэши :)))))))))
-    //     firstHp.src = "assets/icons/half-red-hp.png"
-    // }
-    // if (playerHp == 4) {
-    //     firstHp.src = "assets/icons/empty-hp.png"
-
-    //     avatarImg.src = "assets/avatars/skeleton2.jpg"
-    //     if (selectImg.value == "wizard"){
-    //         avatarImg.src = "assets/avatars/wizard2.png"
-    //     } else if(selectImg.value == "elemental"){
-    //         avatarImg.src = "assets/avatars/elemental2.png"
-    //     }
-    // }
-    // if (playerHp == 3) {
-    //     firstHp.src = "assets/icons/empty-hp.png"
-    //     secondHp.src = "assets/icons/half-red-hp.png"
-
-    //     avatarImg.src = "assets/avatars/skeleton2.jpg"
-    //     if (selectImg.value == "wizard"){
-    //         avatarImg.src = "assets/avatars/wizard2.png"
-    //     } else if(selectImg.value == "elemental"){
-    //         avatarImg.src = "assets/avatars/elemental2.png"
-    //     }
-    // }
-    // if (playerHp == 2) {
-    //     firstHp.src = "assets/icons/empty-hp.png"
-    //     secondHp.src = "assets/icons/empty-hp.png"
-
-    //     avatarImg.src = "assets/avatars/skeleton3.jpg"
-    //     if (selectImg.value == "wizard"){
-    //         avatarImg.src = "assets/avatars/wizard3.png"
-    //     } else if(selectImg.value == "elemental"){
-    //         avatarImg.src = "assets/avatars/elemental3.png"
-    //     }
-    // }
-    // if (playerHp == 1) {
-    //     firstHp.src = "assets/icons/empty-hp.png"
-    //     secondHp.src = "assets/icons/empty-hp.png"
-    //     thirdHp.src = "assets/icons/half-red-hp.png"
-
-    //     avatarImg.src = "assets/avatars/skeleton3.jpg"
-    //     if (selectImg.value == "wizard"){
-    //         avatarImg.src = "assets/avatars/wizard3.png"
-    //     } else if(selectImg.value == "elemental"){
-    //         avatarImg.src = "assets/avatars/elemental3.png"
-    //     }
-    // }
-    // if (playerHp <= 0) {
-    //     firstHp.src = "assets/icons/empty-hp.png"
-    //     secondHp.src = "assets/icons/empty-hp.png"
-    //     thirdHp.src = "assets/icons/empty-hp.png"
-
-    //     avatarImg.src = "assets/avatars/skeleton3.jpg"
-    //     if (selectImg.value == "wizard"){
-    //         avatarImg.src = "assets/avatars/wizard3.png"
-    //     } else if(selectImg.value == "elemental"){
-    //         avatarImg.src = "assets/avatars/elemental3.png"
-    //     }
-    //     setTimeout(() => {
-    //         lose()
-    //     },5500)
-    // }
 }
-
-
 
 function playerHpLose(){
     if (selectSkill == 5){
@@ -441,12 +328,6 @@ function botHpLose(){
     }
 }
 
-// let testtimer = 60; // defoltni timer
-// setInterval(() => {
-//     console.log(testtimer-=1)
-// }, "1000")
-
-
 playAgainBtn.addEventListener("click", () =>{
     playAgain()
 })
@@ -456,6 +337,8 @@ function fullRestart(){
     botHp = 6
     selectSkill = 0
     roundCount = 1
+    playerManaCount = 2
+    // не забыть в будующем обнулять ману и боту
 }
 
 function playAgain() {
@@ -465,4 +348,5 @@ function playAgain() {
     gameScreen.style.display = 'none'
     fullRestart()
     hpAvatar()
+    calcMana()
 }
