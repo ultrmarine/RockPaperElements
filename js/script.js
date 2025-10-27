@@ -21,6 +21,8 @@ const avatarImg = document.getElementById("avatar-img")
 
 let selectImg = document.getElementById("avatar-select")
 
+const playAgainBtn = document.getElementById("play-again-btn")
+
 
 // globalno zagaju переменную таймера так как он запрятан в функции
 let intervalTimer
@@ -106,6 +108,8 @@ let textEnemyMove = document.getElementById("text-enemy-move")
 let textRoundCount = document.getElementById("text-round-count")
 let roundCount = 1
 
+
+// Думать и фиксить эту проблему
 const gesture_wins = {
     "rock": ["fire","scissors","snake","person","tree","wolf","sponge","paper", "group1"],
     "fire": ["scissors","snake","person","tree","wolf","sponge","paper","air",  "group1"],
@@ -241,8 +245,165 @@ function endRoundTimer(){
     }, "1000")
 }
 
+const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
+// console.log(hp[2])
+// let test = 6
+// console.log((test % 2))
+// console.log((test / 2))
+// test = 5
+// console.log((test % 2))
+// console.log((test / 2))
+// test = 2
+// console.log((test % 2))
+// console.log((test / 2))
 
-// это всё желательно сократить,ну я вообще не представляю как
+// const testHp = {
+//         5: [hp[0],hp[0],hp[1]],
+//         4: [hp[0],hp[0],hp[2]],
+//         3: [hp[0],hp[1],hp[2]],
+//         2: [hp[0],hp[2],hp[2]],
+//         1: [hp[1],hp[2],hp[2]],
+// }
+
+// console.log(testHp[1][0])
+const testHp = {
+        6: [hp[0],hp[0],hp[0]],
+        5: [hp[0],hp[0],hp[1]],
+        4: [hp[0],hp[0],hp[2]],
+        3: [hp[0],hp[1],hp[2]],
+        2: [hp[0],hp[2],hp[2]],
+        1: [hp[1],hp[2],hp[2]],
+}
+
+console.log(testHp[5][2])
+
+function hpAvatar(){
+    //горжусь что смог это сократить
+    const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
+    
+    // let halfHp = playerHp % 2 
+    let avatar = ["assets/avatars/skeleton1.jpg","assets/avatars/skeleton2.jpg","assets/avatars/skeleton3.jpg"]
+
+    if (selectImg.value == "wizard"){
+        avatar = ["assets/avatars/wizard1.png","assets/avatars/wizard2.png","assets/avatars/wizard3.png"]
+    } else if(selectImg.value == "elemental"){
+        avatar = ["assets/avatars/elemental1.png","assets/avatars/elemental2.png","assets/avatars/elemental3.png"]
+    }
+
+    const testHp = {
+        6: [hp[0],hp[0],hp[0],avatar[0]],
+        5: [hp[1],hp[0],hp[0],avatar[0]],
+        4: [hp[2],hp[0],hp[0],avatar[1]],
+        3: [hp[2],hp[1],hp[0],avatar[1]],
+        2: [hp[2],hp[2],hp[0],avatar[2]],
+        1: [hp[2],hp[2],hp[1],avatar[2]],
+    }
+
+    for (let i = 0; i <= 6;i++){
+        if (i == playerHp && playerHp != 0){
+            firstHp.src = testHp[i][0]
+            secondHp.src = testHp[i][1]
+            thirdHp.src = testHp[i][2]
+            avatarImg.src = testHp[i][3]
+            break
+            alert(i)
+            console.log("Hp " + playerHp)
+        } else if (playerHp <= 0) {
+            firstHp.src = hp[2]
+            secondHp.src = hp[2]
+            thirdHp.src = hp[2]
+            avatarImg.src = avatar[2]
+            setTimeout(() => {
+                lose()
+            },5500)
+        }
+    }
+    // if (playerHp == 6){
+    //     firstHp.src = hp[0]
+    //     secondHp.src = hp[0]
+    //     thirdHp.src = hp[0]
+    // } else if(playerHp <= 5 && playerHp >=1){
+    //     if (halfHp != 2){
+
+    //     }
+    // } else {
+    //     firstHp.src = hp[2]
+    //     secondHp.src = hp[2]
+    //     thirdHp.src = hp[2]
+    //     setTimeout(() => {
+    //         lose()
+    //     },5500)
+    // }
+
+
+
+    // if (playerHp == 5){
+    //     // я 20 минут потратил,что бы понять что js не воспринимает нормально \ - вот такие базовые для путей слэши :)))))))))
+    //     firstHp.src = "assets/icons/half-red-hp.png"
+    // }
+    // if (playerHp == 4) {
+    //     firstHp.src = "assets/icons/empty-hp.png"
+
+    //     avatarImg.src = "assets/avatars/skeleton2.jpg"
+    //     if (selectImg.value == "wizard"){
+    //         avatarImg.src = "assets/avatars/wizard2.png"
+    //     } else if(selectImg.value == "elemental"){
+    //         avatarImg.src = "assets/avatars/elemental2.png"
+    //     }
+    // }
+    // if (playerHp == 3) {
+    //     firstHp.src = "assets/icons/empty-hp.png"
+    //     secondHp.src = "assets/icons/half-red-hp.png"
+
+    //     avatarImg.src = "assets/avatars/skeleton2.jpg"
+    //     if (selectImg.value == "wizard"){
+    //         avatarImg.src = "assets/avatars/wizard2.png"
+    //     } else if(selectImg.value == "elemental"){
+    //         avatarImg.src = "assets/avatars/elemental2.png"
+    //     }
+    // }
+    // if (playerHp == 2) {
+    //     firstHp.src = "assets/icons/empty-hp.png"
+    //     secondHp.src = "assets/icons/empty-hp.png"
+
+    //     avatarImg.src = "assets/avatars/skeleton3.jpg"
+    //     if (selectImg.value == "wizard"){
+    //         avatarImg.src = "assets/avatars/wizard3.png"
+    //     } else if(selectImg.value == "elemental"){
+    //         avatarImg.src = "assets/avatars/elemental3.png"
+    //     }
+    // }
+    // if (playerHp == 1) {
+    //     firstHp.src = "assets/icons/empty-hp.png"
+    //     secondHp.src = "assets/icons/empty-hp.png"
+    //     thirdHp.src = "assets/icons/half-red-hp.png"
+
+    //     avatarImg.src = "assets/avatars/skeleton3.jpg"
+    //     if (selectImg.value == "wizard"){
+    //         avatarImg.src = "assets/avatars/wizard3.png"
+    //     } else if(selectImg.value == "elemental"){
+    //         avatarImg.src = "assets/avatars/elemental3.png"
+    //     }
+    // }
+    // if (playerHp <= 0) {
+    //     firstHp.src = "assets/icons/empty-hp.png"
+    //     secondHp.src = "assets/icons/empty-hp.png"
+    //     thirdHp.src = "assets/icons/empty-hp.png"
+
+    //     avatarImg.src = "assets/avatars/skeleton3.jpg"
+    //     if (selectImg.value == "wizard"){
+    //         avatarImg.src = "assets/avatars/wizard3.png"
+    //     } else if(selectImg.value == "elemental"){
+    //         avatarImg.src = "assets/avatars/elemental3.png"
+    //     }
+    //     setTimeout(() => {
+    //         lose()
+    //     },5500)
+    // }
+}
+
+
+
 function playerHpLose(){
     if (selectSkill == 5){
         playerHp -= 2
@@ -250,83 +411,18 @@ function playerHpLose(){
     } else{
         playerHp -= 1
     }
-
-    if (playerHp == 5){
-        // я 20 минут потратил,что бы понять что js не воспринимает нормально \ - вот такие базовые для путей слэши :)))))))))
-        firstHp.src = "assets/icons/half-red-hp.png"
-    }
-    if (playerHp == 4) {
-        firstHp.src = "assets/icons/empty-hp.png"
-
-        avatarImg.src = "assets/avatars/skeleton2.jpg"
-        if (selectImg.value == "wizard"){
-            avatarImg.src = "assets/avatars/wizard2.png"
-        } else if(selectImg.value == "elemental"){
-            avatarImg.src = "assets/avatars/elemental2.png"
-        }
-    }
-    if (playerHp == 3) {
-        firstHp.src = "assets/icons/empty-hp.png"
-        secondHp.src = "assets/icons/half-red-hp.png"
-
-        avatarImg.src = "assets/avatars/skeleton2.jpg"
-        if (selectImg.value == "wizard"){
-            avatarImg.src = "assets/avatars/wizard2.png"
-        } else if(selectImg.value == "elemental"){
-            avatarImg.src = "assets/avatars/elemental2.png"
-        }
-    }
-    if (playerHp == 2) {
-        firstHp.src = "assets/icons/empty-hp.png"
-        secondHp.src = "assets/icons/empty-hp.png"
-
-        avatarImg.src = "assets/avatars/skeleton3.jpg"
-        if (selectImg.value == "wizard"){
-            avatarImg.src = "assets/avatars/wizard3.png"
-        } else if(selectImg.value == "elemental"){
-            avatarImg.src = "assets/avatars/elemental3.png"
-        }
-    }
-    if (playerHp == 1) {
-        firstHp.src = "assets/icons/empty-hp.png"
-        secondHp.src = "assets/icons/empty-hp.png"
-        thirdHp.src = "assets/icons/half-red-hp.png"
-
-        avatarImg.src = "assets/avatars/skeleton3.jpg"
-        if (selectImg.value == "wizard"){
-            avatarImg.src = "assets/avatars/wizard3.png"
-        } else if(selectImg.value == "elemental"){
-            avatarImg.src = "assets/avatars/elemental3.png"
-        }
-    }
-    if (playerHp <= 0) {
-        firstHp.src = "assets/icons/empty-hp.png"
-        secondHp.src = "assets/icons/empty-hp.png"
-        thirdHp.src = "assets/icons/empty-hp.png"
-
-        avatarImg.src = "assets/avatars/skeleton3.jpg"
-        if (selectImg.value == "wizard"){
-            avatarImg.src = "assets/avatars/wizard3.png"
-        } else if(selectImg.value == "elemental"){
-            avatarImg.src = "assets/avatars/elemental3.png"
-        }
-        setTimeout(() => {
-            lose()
-        },5500)
-    }
+    hpAvatar()
 }
 
 function lose(){
     clearInterval(intervalTimer)
     loseWinScreen.style.display = "flex"
-    gameScreen.style.pointerEvents = "none"
 }
 
 function win(){
     clearInterval(intervalTimer)
     loseWinText.innerHTML = "Ты выйграл!!!"
     loseWinScreen.style.display = "flex"
-    gameScreen.style.pointerEvents = "none"
 }
 
 function botHpLose(){
@@ -350,3 +446,23 @@ function botHpLose(){
 //     console.log(testtimer-=1)
 // }, "1000")
 
+
+playAgainBtn.addEventListener("click", () =>{
+    playAgain()
+})
+
+function fullRestart(){
+    playerHp = 6
+    botHp = 6
+    selectSkill = 0
+    roundCount = 1
+}
+
+function playAgain() {
+    gameScreen.style.pointerEvents = "auto"
+    startScreen.style.display = 'flex'
+    loseWinScreen.style.display = "none"
+    gameScreen.style.display = 'none'
+    fullRestart()
+    hpAvatar()
+}
