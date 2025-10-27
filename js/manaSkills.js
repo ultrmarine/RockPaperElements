@@ -116,3 +116,38 @@ secondSkillBtn.addEventListener("click", () => {
     calcMana()
     textSkills()
 })
+
+const thirdSkillBtn = document.getElementById("third-skill-btn")
+
+thirdSkillBtn.addEventListener("click", () =>{
+    if (playerManaCount >= 5 && selectSkill == 0 && playerHp < 6){
+        playerManaCount-= 5
+        selectSkill = 6
+        playerHp += 1
+    } else if (playerManaCount < 5){
+        alert("Недостаточно маны!")
+    } else if (selectSkill != 0) {
+        alert("Уже применён другой скилл!")
+    } else if (playerHp >= 6){
+        alert("Здоровье не может быть больше 6!")
+    }
+    calcMana()
+    textSkills()
+    calcHpAvatar()
+})
+
+const fourthSkillBtn = document.getElementById("fourth-skill-btn")
+
+fourthSkillBtn.addEventListener("click", () => {
+    if (playerManaCount >= 2 && selectSkill == 0) {
+        playerManaCount-= 2
+        selectSkill = 7
+    } else if (playerManaCount < 2){
+        alert("Недостаточно маны!")
+    } else if (selectSkill != 0) {
+        alert("Уже применён другой скилл!")
+    }
+    calcMana()
+    textSkills()
+})
+

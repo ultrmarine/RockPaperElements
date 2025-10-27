@@ -34,7 +34,6 @@ startBtn.addEventListener('click', () => {
 
 })
 
-
 playBtn.addEventListener('click', () => {
     if (nickInp.value == ""){
         nickInp.value = "Default user"
@@ -75,6 +74,14 @@ function textSkills(){
         text = "На этот раунд ваш урон и проходящий по вам урон увеличен на 1 "
         top = "-20px"
         fontSize = "30px"
+    } else if (selectSkill == 6) {
+        selectSkill = 0
+        top = "0px"
+        fontSize = "40px"
+        text = "Вы похилились на 1 хп!"
+        setTimeout(() => {
+            textSkills()
+        }, "3000");
     }
 
     textAppliedSkill.innerHTML = text;
@@ -189,13 +196,17 @@ confirmBtn.addEventListener('click', () => {
         if (playerGestureChoice == botChooseGesture1){
             textRoundTotal.innerHTML = "У вас ничья"
 
-        } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice)){
+        } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice) && selectSkill != 7){
             //доработать
             textRoundTotal.innerHTML = "Сыграны равные по силе жесты вы оба теряете hp"
             playerHpLose()
             botHpLose()
         } else if (gesture_wins[playerGestureChoice].includes(botChooseGesture1)){
             textRoundTotal.innerHTML = "Ты выйграл"
+            if(selectSkill == 7){
+                textRoundTotal.innerHTML = "Равный жест не сработал.Ты выйграл"
+                selectSkill = 0
+            }
             botHpLose()
         } else{
             textRoundTotal.innerHTML = "Ты проиграл вамп вамп"
@@ -251,7 +262,7 @@ function endRoundTimer(){
 
 const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
 
-function hpAvatar(){
+function calcHpAvatar(){
     //горжусь что смог это сократить
     const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
     
@@ -269,7 +280,7 @@ function hpAvatar(){
         4: [hp[2],hp[0],hp[0],avatar[1]],
         3: [hp[2],hp[1],hp[0],avatar[1]],
         2: [hp[2],hp[2],hp[0],avatar[2]],
-        1: [hp[2],hp[2],hp[1],avatar[2]],
+        1: [hp[2],hp[2],hp[1],avatar[2]]
     }
 
     for (let i = 0; i <= 6;i++){
@@ -298,7 +309,7 @@ function playerHpLose(){
     } else{
         playerHp -= 1
     }
-    hpAvatar()
+    calcHpAvatar()
 }
 
 function lose(){
@@ -347,6 +358,6 @@ function playAgain() {
     loseWinScreen.style.display = "none"
     gameScreen.style.display = 'none'
     fullRestart()
-    hpAvatar()
+    calcHpAvatar()
     calcMana()
 }
