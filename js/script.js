@@ -82,11 +82,21 @@ function textSkills(){
         setTimeout(() => {
             textSkills()
         }, "3000");
+    } else if (selectSkill == 7) {
+        text = "Вы отключили равные жесты противнику"
+    } else if (selectSkill == 8) {
+        top = "-20px"
+        fontSize = "40px"
+        text = `Вы поставили ловушку на жест ${playerGestureChoice}`
+    } else if (selectSkill == 9) {
+        top = "-35px"
+        fontSize = "45px"
+        text = `У вас полная неуязвимость :)`
     }
 
-    textAppliedSkill.innerHTML = text;
-    textAppliedSkill.style.top = top;
-    textAppliedSkill.style.fontSize = fontSize;
+    textAppliedSkill.innerHTML = text
+    textAppliedSkill.style.top = top
+    textAppliedSkill.style.fontSize = fontSize
 }
 
 // Чё та пока что не нужно
@@ -179,10 +189,15 @@ gestureAllButtons.forEach(button => {
 
 
 let botChooseGesture1
+let botCast1
 
 confirmBtn.addEventListener('click', () => {
     if(playerGestureChoice != "-") {
+        // начисление маны
         roundMana()
+
+        botCast1 = botCast()
+
         textTimerRound.innerHTML = "TIME: 5 s"
         clearInterval(intervalTimer)
         textTimer.innerHTML = "TIME: 60 s"
@@ -191,26 +206,35 @@ confirmBtn.addEventListener('click', () => {
             endRoundTimer()
         }
         textEnemyMove.innerHTML = "Противник сыграл " + botChooseGesture1
+    
+        botMana()
 
+        if (selectSkill == 8 && skill8PlayerChoice == botChooseGesture1){
+            // потом сделать,либо потерю хп,либо потерю маны
+            alert("БОТ ПОПАЛ В ЛОВУШКУ")
+            skill8PlayerChoice = ""
+        }
 
         if (playerGestureChoice == botChooseGesture1){
             textRoundTotal.innerHTML = "У вас ничья"
-
-        } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice) && selectSkill != 7){
+            selectSkill = 0
+        } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice) && selectSkill != 7){ //ravnie по силе жесты проверка
             //доработать
             textRoundTotal.innerHTML = "Сыграны равные по силе жесты вы оба теряете hp"
             playerHpLose()
             botHpLose()
+            selectSkill = 0
         } else if (gesture_wins[playerGestureChoice].includes(botChooseGesture1)){
             textRoundTotal.innerHTML = "Ты выйграл"
-            if(selectSkill == 7){
+            if(selectSkill == 7 && gesture_wins[botChooseGesture1].includes(playerGestureChoice)){
                 textRoundTotal.innerHTML = "Равный жест не сработал.Ты выйграл"
-                selectSkill = 0
             }
             botHpLose()
+            selectSkill = 0
         } else{
             textRoundTotal.innerHTML = "Ты проиграл вамп вамп"
             playerHpLose()
+            selectSkill = 0
         }
     } else{
         alert("Для подтверждения нужно выбрать жест") //потом заменить алёрт на pop окно по желанию конечно
@@ -303,9 +327,12 @@ function calcHpAvatar(){
 }
 
 function playerHpLose(){
-    if (selectSkill == 5){
+    if (selectSkill == 9){
+        textRoundTotal.innerHTML += ", но невиданный щит спас вас от урона :)"
+    } else if(selectSkill == 5 && botCast1 == 2){
+        playerHp -= 3
+    } else if (selectSkill == 5 || botCast1 == 2){
         playerHp -= 2
-        selectSkill = 0
     } else{
         playerHp -= 1
     }
@@ -324,10 +351,11 @@ function win(){
 }
 
 function botHpLose(){
-    if (selectSkill == 5){
+    if (selectSkill == 5 && botCast1 == 2){
+        botHp -= 3
+    } else if(selectSkill == 5 || botCast1 == 2){
         botHp -= 2
-        selectSkill = 0
-    } else {
+    }else {
         botHp -= 1
     }
     BotHpText.innerHTML = "BOT HP "+ botHp
@@ -346,10 +374,11 @@ playAgainBtn.addEventListener("click", () =>{
 function fullRestart(){
     playerHp = 6
     botHp = 6
+    BotHpText.innerHTML = "BOT HP "+ botHp
     selectSkill = 0
     roundCount = 1
     playerManaCount = 2
-    // не забыть в будующем обнулять ману и боту
+    botManaCount = 2
 }
 
 function playAgain() {

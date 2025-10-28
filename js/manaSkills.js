@@ -15,7 +15,7 @@ function calcMana(){
         divManaCount.style.display = "none"
     }
     textManaCount.innerHTML = playerManaCount + " mana"
-    if (playerManaCount == 0){
+    if (playerManaCount <= 0){
         textManaCount.style.display = "none"
     } else{
         textManaCount.style.display = "flex"
@@ -100,7 +100,7 @@ skillsBtn[3].addEventListener("click", () => {
     textSkills()
 })
 
-// СПОСОБНОСТЬ УВЕЛИЧЕНИЯ ДЕМАДЖА ПО БОТУ И ИГРОКУ
+// СПОСОБНОСТЬ УВЕЛИЧЕНИЯ ДЕМАДЖА ПО БОТУ
 
 const secondSkillBtn = document.getElementById("second-skill-btn")
 
@@ -151,3 +151,53 @@ fourthSkillBtn.addEventListener("click", () => {
     textSkills()
 })
 
+// способность ловушки
+
+const fifthSkillBtn = document.getElementById("fifth-skill-btn")
+let skill8PlayerChoice
+
+fifthSkillBtn.addEventListener("click", () =>{
+    if (playerManaCount >= 4 && selectSkill == 0 && playerGestureChoice != "-"){
+        let confirmBtn = confirm(`Вы точно хотите поставить ловушку на ${playerGestureChoice}?`)
+        if (confirmBtn){
+            playerManaCount -= 4
+            selectSkill = 8
+            skill8PlayerChoice = playerGestureChoice
+        }
+    } else if (playerManaCount < 4){
+        alert("Недостаточно маны!")
+    } else if (selectSkill != 0) {
+        alert("Уже применён другой скилл!")
+    }
+    calcMana()
+    textSkills()
+})
+
+// способность неуязвимости
+
+const sixthSkillBtn = document.getElementById("sixth-skill-btn")
+
+sixthSkillBtn.addEventListener("click", ()=>{
+    if(playerManaCount >= 8 && selectSkill == 0){
+        playerManaCount -= 8
+        selectSkill = 9
+    } else if (playerManaCount < 8){
+        alert("Недостаточно маны!")
+    } else if (selectSkill != 0) {
+        alert("Уже применён другой скилл!")
+    }
+    calcMana()
+    textSkills()
+})
+
+
+
+
+// let test = setInterval(()=>{
+//     console.log("skill: "+selectSkill)
+//     console.log("skill 8 choise: "+skill8PlayerChoice)
+//     console.log("Botchoise: "+botChooseGesture1)
+// }, "1000")
+
+// let testets = confirm("TEST +-")
+// alert(testets) 
