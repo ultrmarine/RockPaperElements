@@ -1,38 +1,37 @@
-const startBtn = document.getElementById('start-btn')
-const startScreen = document.getElementById('start-screen')
-const gameScreen = document.getElementById('game-screen')
-const preGameScreen = document.getElementById("pre-game-screen")
+// const startBtn = document.getElementById('start-btn')
+// const startScreen = document.getElementById('start-screen')
+// const gameScreen = document.getElementById('game-screen')
+// const preGameScreen = document.getElementById("pre-game-screen")
 
-const playBtn = document.getElementById("play-btn")
-const closePreGameScreen = document.getElementById("close-pre-game-screen")
+// const playBtn = document.getElementById("play-btn")
+// const closePreGameScreen = document.getElementById("close-pre-game-screen")
 
-const confirmBtn = document.getElementById("confirm-btn")
-const roundScreen = document.getElementById("round-screen")
-const nickInp = document.getElementById("nick-input")
-const textNickname = document.getElementById("text-nickname")
-const textTimer = document.getElementById("text-timer")
-const textTimerRound = document.getElementById("text-timer-round-screen")
-const textRoundScreen = document.getElementById("text-round-screen")
+// const confirmBtn = document.getElementById("confirm-btn")
+// const roundScreen = document.getElementById("round-screen")
+// const nickInp = document.getElementById("nick-input")
+// const textNickname = document.getElementById("text-nickname")
+// const textTimer = document.getElementById("text-timer")
+// const textTimerRound = document.getElementById("text-timer-round-screen")
+// const textRoundScreen = document.getElementById("text-round-screen")
 
-const loseWinScreen = document.getElementById("lose-win-screen")
-const loseWinText = document.getElementById("lose-win-text")
+// const loseWinScreen = document.getElementById("lose-win-screen")
+// const loseWinText = document.getElementById("lose-win-text")
 
-const avatarImg = document.getElementById("avatar-img")
+// const avatarImg = document.getElementById("avatar-img")
 
-let selectImg = document.getElementById("avatar-select")
+// let selectImg = document.getElementById("avatar-select")
 
-const playAgainBtn = document.getElementById("play-again-btn")
+// const playAgainBtn = document.getElementById("play-again-btn")
 
 
 // globalno zagaju переменную таймера так как он запрятан в функции
 let intervalTimer
 let intervalTimerEndRound
 
-startBtn.addEventListener('click', () => {
-    startScreen.style.display = 'none'
-    preGameScreen.style.display = 'flex'
-
-})
+// startBtn.addEventListener('click', () => {
+//     startScreen.style.display = 'none'
+//     preGameScreen.style.display = 'flex'
+// })
 
 playBtn.addEventListener('click', () => {
     if (nickInp.value == ""){
@@ -56,7 +55,7 @@ closePreGameScreen.addEventListener('click', () => {
     preGameScreen.style.display = 'none'
 })
 
-const textAppliedSkill = document.getElementById("text-applied-skill")
+// const textAppliedSkill = document.getElementById("text-applied-skill")
 
 
 function textSkills(){ 
@@ -117,7 +116,7 @@ function textSkills(){
 // const lightningBtn = document.getElementById("btn-gesture15")
 // const pistolBtn = document.getElementById("btn-gesture16")
 
-const textRoundTotal = document.getElementById("text-round-total")
+// const textRoundTotal = document.getElementById("text-round-total")
 let textPlayerChoice = document.getElementById("text-player-choice")
 let textEnemyMove = document.getElementById("text-enemy-move")
 
@@ -126,24 +125,24 @@ let textRoundCount = document.getElementById("text-round-count")
 let roundCount = 1
 
 
-const gesture_wins = {
-    "rock": ["fire","scissors","snake","person","tree","wolf","sponge","paper", "group1"],
-    "fire": ["scissors","snake","person","tree","wolf","sponge","paper","air",  "group1"],
-    "scissors": ["snake","person","tree","wolf","sponge","paper","air","water",  "group1"],
-    "snake": ["person","tree","wolf","sponge","paper","air","water","boom",  "group1"],
-    "person": ["tree","wolf","sponge","paper","air","water","boom","dragon",  "group2"],
-    "tree": ["wolf","sponge","paper","air","water","boom","dragon","devil",  "group2"],
-    "wolf": ["sponge","paper","air","water","boom","dragon","devil","lightning",  "group2"],
-    "sponge": ["paper","air","water","boom","dragon","devil","lightning","pistol",  "group2"],
-    "paper": ["air","water","boom","dragon","devil","lightning","pistol","rock",  "group3"],
-    "air": ["water","boom","dragon","devil","lightning","pistol","rock","fire",  "group3"],
-    "water": ["boom","dragon","devil","lightning","pistol","rock","fire","scissors",  "group3"],
-    "boom": ["dragon","devil","lightning","pistol","rock","fire","scissors","snake",  "group3"],
-    "dragon": ["devil","lightning","pistol","rock","fire","scissors","snake","person",  "group4"],
-    "devil": ["lightning","pistol","rock","fire","scissors","snake","person","tree",  "group4"],
-    "lightning": ["pistol","rock","fire","scissors","snake","person","tree","wolf",  "group4"],
-    "pistol": ["rock","fire","scissors","snake","person","tree","wolf","sponge",  "group4"]
-}
+// const gesture_wins = {
+//     "rock": ["fire","scissors","snake","person","tree","wolf","sponge","paper", "group1"],
+//     "fire": ["scissors","snake","person","tree","wolf","sponge","paper","air",  "group1"],
+//     "scissors": ["snake","person","tree","wolf","sponge","paper","air","water",  "group1"],
+//     "snake": ["person","tree","wolf","sponge","paper","air","water","boom",  "group1"],
+//     "person": ["tree","wolf","sponge","paper","air","water","boom","dragon",  "group2"],
+//     "tree": ["wolf","sponge","paper","air","water","boom","dragon","devil",  "group2"],
+//     "wolf": ["sponge","paper","air","water","boom","dragon","devil","lightning",  "group2"],
+//     "sponge": ["paper","air","water","boom","dragon","devil","lightning","pistol",  "group2"],
+//     "paper": ["air","water","boom","dragon","devil","lightning","pistol","rock",  "group3"],
+//     "air": ["water","boom","dragon","devil","lightning","pistol","rock","fire",  "group3"],
+//     "water": ["boom","dragon","devil","lightning","pistol","rock","fire","scissors",  "group3"],
+//     "boom": ["dragon","devil","lightning","pistol","rock","fire","scissors","snake",  "group3"],
+//     "dragon": ["devil","lightning","pistol","rock","fire","scissors","snake","person",  "group4"],
+//     "devil": ["lightning","pistol","rock","fire","scissors","snake","person","tree",  "group4"],
+//     "lightning": ["pistol","rock","fire","scissors","snake","person","tree","wolf",  "group4"],
+//     "pistol": ["rock","fire","scissors","snake","person","tree","wolf","sponge",  "group4"]
+// }
 
 const firstHp = document.getElementById("first-hp")
 const secondHp = document.getElementById("second-hp")
@@ -161,7 +160,7 @@ let botHp = 6
 
 let playerGestureChoice = "-"
 
-const gestureAllButtons = document.querySelectorAll("[data-gesture]")
+// const gestureAllButtons = document.querySelectorAll("[data-gesture]")
 
 gestureAllButtons.forEach(button => {
     button.addEventListener("click", () => {
@@ -242,7 +241,8 @@ confirmBtn.addEventListener('click', () => {
 })
 
 // простейшая функция таймера,если таймер заканчивается,а игрок ничё не выбрал - пикает камень
-function roundTimer(){
+export class roundTimer {
+    roundTimer(){
     if (selectSkill >= 1 && selectSkill <= 4) {
         botChooseGesture1 = botChooseGesture(`group${selectSkill}`)
         // console.log(`TETSTETESTET group${selectSkill}`)
@@ -263,6 +263,28 @@ function roundTimer(){
         }
     }, "1000")
 }
+}
+// function roundTimer(){
+//     if (selectSkill >= 1 && selectSkill <= 4) {
+//         botChooseGesture1 = botChooseGesture(`group${selectSkill}`)
+//         // console.log(`TETSTETESTET group${selectSkill}`)
+//         selectSkill = 0
+//         textSkills()
+//     } else {
+//         botChooseGesture1 = botChooseGesture()
+//     }
+//     textRoundCount.innerHTML = roundCount
+//     let defaultTimer = 60
+//     intervalTimer = setInterval(() => {
+//         defaultTimer-=1
+//         textTimer.innerHTML = "TIME: " + defaultTimer +" s"
+//         if (defaultTimer <= 0){
+//             clearInterval(intervalTimer)
+//             playerGestureChoice = "rock"
+//             confirmBtn.click()
+//         }
+//     }, "1000")
+// }
 
 function endRoundTimer(){
     let defaultTimer = 5
@@ -284,7 +306,7 @@ function endRoundTimer(){
     }, "1000")
 }
 
-const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
+// const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
 
 function calcHpAvatar(){
     //горжусь что смог это сократить

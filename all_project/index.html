@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="client.js"></script>
+</head>
+<body>
+
+
+<!-- стартовое -->
+    <div id="start-screen">
+        <h1 class="title-name">Rock Paper Elements</h1>
+        <button id="start-btn">Start</button>
+        <button>TESTTEST</button>
+        <button>TESTEST2</button>
+    </div>
+
+    <div id="pre-game-screen" style="display: none;" >
+        <button id="play-btn">PLAY</button>
+        <button id="close-pre-game-screen">BACK</button>
+        <input id="nick-input" type="text">
+        <select name="avatarSelect" id="avatar-select">
+            <option value="skeleton">Скелет</option>
+            <option value="wizard">Волшебник</option>
+            <option value="elemental">Элементаль</option>
+        </select>
+    </div>
+
+
+
+<!-- Игровое окошечко -->
+    <div id="game-screen" style="display: none;">
+        <!-- Див под аватарки -->
+        <div class="div-avatar">
+            <img id="avatar-img" src="assets\avatars\skeleton1.jpg">
+
+        </div>
+        <!-- див с картинками хп -->
+        <div class="div-hp">
+            <img class="img-hp" id="third-hp" src="assets\icons\red-hp.png">
+            <img class="img-hp" id="second-hp" src="assets\icons\red-hp.png">
+            <img class="img-hp" id="first-hp" src="assets\icons\red-hp.png">
+        </div>
+
+        <div class="div-bot-hp">
+            <h1 id="bot-hp">BOT HP 6</h1>
+            <h6 id="test-mana-bot">2</h6>    <!-- потом удалить,пока для маны и способностей бота нужна-->
+        </div>
+        <!-- див который показывает раунд -->
+        <div class="div-round">
+            <h1 class="text-round">ROUND</h1>
+            <h1 id="text-round-count">0</h1>
+        </div>
+
+
+        <!-- див с ником игрока -->
+        <div class="div-nickname">
+            <h1 id="text-nickname">nickname</h1>
+        </div>
+
+        <div class="div-applied-skill">
+            <h1 id="text-applied-skill">No skills applied</h1>
+        </div>
+
+        <!-- див со всеми скиллами -->
+        <div class="div-skills">
+            <button id="first-skill-btn">Заблокировать противнику одну из чётырёх групп жестов на следующий ход - 4 маны</button>
+            <div id="div-first-skill" style="display: none;">
+                <button class="first-skills-btn">Первую группу жестов</button>
+                <button class="first-skills-btn">Вторую группу жестов</button>
+                <button class="first-skills-btn">Третью группу жестов</button>
+                <button class="first-skills-btn">Четвёртую группу жестов</button>
+            </div>
+            <button id="second-skill-btn">Увеличить свой урон на 1,но и проходящий по себе урон на 1 на этот раунд - 3 маны</button>
+            <button id="third-skill-btn">Отхил на 1 хп - 5 маны</button>
+            <button id="fourth-skill-btn">Отключить "равные жесты" для противника - 2 маны</button>
+            <button id="fifth-skill-btn">Поставить ловушку на жест выбраный жест - 4 маны</button>
+            <button id="sixth-skill-btn">Полная неуязвимость на 1 ход - 8 маны</button>
+        </div>
+        <!-- див с маной -->
+        <div class="div-mana">
+            <div id="div-mana-count"></div>
+            <h1 id="text-mana-count">2 mana</h1>
+        </div>
+        <!-- див с временем -->
+        <div class="div-timer">
+            <h1 id="text-timer">TIME: 60 s </h1>
+        </div>
+        
+        <button id="confirm-btn">Сonfirm</button>
+
+        <div class="div-gesture">
+            <button id="btn-gesture1" data-gesture="rock">Камень</button> 
+            <button id="btn-gesture2" data-gesture="fire">Огонь</button>
+            <button id="btn-gesture3" data-gesture="scissors">Ножницы</button>
+            <button id="btn-gesture4" data-gesture="snake">Змея</button>
+            <button id="btn-gesture5" data-gesture="person">Человек</button>
+            <button id="btn-gesture6" data-gesture="tree">Дерево</button>
+            <button id="btn-gesture7" data-gesture="wolf">Волк</button>
+            <button id="btn-gesture8" data-gesture="sponge">Губка</button>
+            <button id="btn-gesture9" data-gesture="paper">Бумага</button>
+            <button id="btn-gesture10" data-gesture="air">Воздух</button>
+            <button id="btn-gesture11" data-gesture="water">Вода</button>
+            <button id="btn-gesture12" data-gesture="boom">Взрыв</button>
+            <button id="btn-gesture13" data-gesture="dragon">Дракон</button>
+            <button id="btn-gesture14" data-gesture="devil">Дьявол</button>
+            <button id="btn-gesture15" data-gesture="lightning">Молния</button>
+            <button id="btn-gesture16" data-gesture="pistol">Пистолет</button>
+        </div>
+
+        <h1 id="text-player-choice">
+            Твой выбор: >>>
+        </h1>
+
+        <div id="round-screen" style="display: none;">
+            <h1 id="text-round-screen">Конец 335 раунда</h1>
+            <h1 id="text-enemy-move">Противник сыграл ладошку</h1>
+            <h1 id="text-round-total">Ты победил ну или проиграл я хз</h1>
+            <h1 id="text-bot-skill">Противник применил скилл: </h1>
+            <h1 id="text-timer-round-screen">TIME: 5 s </h1>
+        </div>
+
+        <div id="lose-win-screen" style="display: none;">
+            <h1 id="lose-win-text">Ты проиграл</h1>
+            <button id="play-again-btn">СЫГРАТЬ ЗАНОВА</button>
+        </div>
+
+    </div>
+<!-- <script src="js\script.js"></script>
+<script src="js\manaSkills.js"></script>
+<script src="js\bot.js"></script> -->
+</body>
+</html>

@@ -120,7 +120,7 @@ function botCast(){
         alert("Bot skill 3")
         botManaCount -= 5
         botHp += 1
-        textBotSkill.innerHTML += ""
+        textBotSkill.innerHTML += "Противник решил похилиться"
     } else{
         textBotSkill.innerHTML += "Противник решил пропустить ход"
     }
