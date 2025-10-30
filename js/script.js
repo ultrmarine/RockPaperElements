@@ -144,11 +144,11 @@ let roundCount = 1
 //     "pistol": ["rock","fire","scissors","snake","person","tree","wolf","sponge",  "group4"]
 // }
 
-const firstHp = document.getElementById("first-hp")
-const secondHp = document.getElementById("second-hp")
-const thirdHp = document.getElementById("third-hp")
+// const firstHp = document.getElementById("first-hp")
+// const secondHp = document.getElementById("second-hp")
+// const thirdHp = document.getElementById("third-hp")
 
-const BotHpText = document.getElementById("bot-hp")
+// const BotHpText = document.getElementById("bot-hp")
 
 let playerHp = 6
 let botHp = 6
@@ -241,7 +241,7 @@ confirmBtn.addEventListener('click', () => {
 })
 
 // простейшая функция таймера,если таймер заканчивается,а игрок ничё не выбрал - пикает камень
-export class roundTimer {
+class roundTimer {
     roundTimer(){
     if (selectSkill >= 1 && selectSkill <= 4) {
         botChooseGesture1 = botChooseGesture(`group${selectSkill}`)
