@@ -101,6 +101,7 @@ function botInvoker(){
 
 }
 
+
 const textBotSkill = document.getElementById("text-bot-skill")
 
 function botCast(){

@@ -306,6 +306,7 @@ function endRoundTimer(){
     }, "1000")
 }
 
+
 // const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
 
 function calcHpAvatar(){

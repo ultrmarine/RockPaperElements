@@ -193,6 +193,7 @@ sixthSkillBtn.addEventListener("click", ()=>{
 
 
 
+
 // let test = setInterval(()=>{
 //     console.log("skill: "+selectSkill)
 //     console.log("skill 8 choise: "+skill8PlayerChoice)
