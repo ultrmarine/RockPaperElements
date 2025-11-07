@@ -18,27 +18,45 @@ server.listen(PORT, "0.0.0.0", () => {
 
 let playerGestureChoice = "-"
 let selectImgServ
+let skill8PlayerChoice = "-"
 ws.on("connection", socket => {
     console.log("подключился");
 
     socket.on("message", msg => {
-        const data = msg.toString();
+        // const data = msg.toString();
+        const data = JSON.parse(msg)
+
         console.log("Сообщение klienta:", data);
 
-        if (data === "startTimer") {
+        if (data.type === "startTimer") {
             startRoundTimer();
         }
-        if (gesture_wins[data]){ // сделать сравнение жестов
-            playerGestureChoice = data
+        if (data.type === "playerGestureChoice" && gesture_wins[data.value]){ // сделать сравнение жестов
+            playerGestureChoice = data.value
         }
-        if (data === "confirm btn"){
+        if (data.type === "confirmBtn"){
             roundEnd()
         }
-        if (data === "AvatarImgElemental"){
-            selectImgServ = "elemental"
+        if (data.type === "AvatarImg"){
+            selectImgServ = data.value
         }
-        if (data === "AvatarImgWizard"){
-            selectImgServ = "wizard"
+        if (data.type === "firstSkill"){
+            firstSkills(data.value)
+        }
+
+        if (data.type === "Skills"){
+            allSkills(data.value)
+        }
+
+        if (data.type === "trapChoice"){
+            skill8PlayerChoice = data.value
+            allSkills("trap")
+        }
+
+        if (data.type === "playAgain"){
+            if(playerHp === 0 || botHp === 0){
+                playAgain()
+            }
         }
     });
 });
@@ -46,11 +64,12 @@ ws.on("connection", socket => {
 let selectSkill = 0
 let roundCount = 1
 let botChooseGesture1
+let timerInterval
 
 function startRoundTimer() {
     let defaultTimer = 60;
-
-    const timerInterval = setInterval(() => {
+    botChooseGesture1 = botChooseGesture()
+    timerInterval = setInterval(() => {
         defaultTimer--;
         ws.clients.forEach(client => {
             if (client.readyState === 1) {
@@ -62,8 +81,11 @@ function startRoundTimer() {
         });
 
         if (defaultTimer <= 0) {
-            clearInterval(timerInterval);
-            console.log("конец таймера");
+            clearInterval(timerInterval)
+            if (playerGestureChoice == "-"){
+                playerGestureChoice = "rock"
+            }
+            roundEnd()
         }
     }, 1000);
 }
@@ -91,10 +113,27 @@ const gesture_wins = {
 
 let playerHp = 6
 let botHp = 6
-
+let botCast1
 
 function roundEnd(){
     if(playerGestureChoice != "-") {
+        clearInterval(timerInterval)
+        roundMana()
+        botCast1 = botCast()
+        botMana()
+
+        if (selectSkill == 8 && skill8PlayerChoice == botChooseGesture1){
+            // потом сделать,либо потерю хп,либо потерю маны
+            ws.clients.forEach(client => {
+                if (client.readyState === 1) {
+                    client.send(JSON.stringify({
+                        type: "BotTrap"
+                    }));
+                }
+            })
+            skill8PlayerChoice = ""
+        }
+
         if (playerGestureChoice == botChooseGesture1){
             ws.clients.forEach(client => {
                 if (client.readyState === 1) {
@@ -104,15 +143,6 @@ function roundEnd(){
                     }));
                 }
             })
-
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "roundScreenState",
-                    }));
-                }
-            })
-
         selectSkill = 0
         } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice) && selectSkill != 7){ //ravnie по силе жесты проверка
             //доработать
@@ -150,16 +180,17 @@ function roundEnd(){
             selectSkill = 0
         } else{
             ws.clients.forEach(client => {
-                    if (client.readyState === 1) {
-                        client.send(JSON.stringify({
-                            type: "roundStatus",
-                            value: "Ты проиграл вамп вамп"
-                        }));
-                    }
-                    })
+                if (client.readyState === 1) {
+                    client.send(JSON.stringify({
+                        type: "roundStatus",
+                        value: "Ты проиграл вамп вамп"
+                    }));
+                }
+            })
             playerHpLose()
             selectSkill = 0
         }
+        endRoundTimer()
 
     } else{
          //потом заменить алёрт на pop окно по желанию конечно
@@ -167,29 +198,34 @@ function roundEnd(){
 }
 
 function playerHpLose(){
-    // if (selectSkill == 9){
-    //     textRoundTotal.innerHTML += ", но невиданный щит спас вас от урона :)"
-    // } else if(selectSkill == 5 && botCast1 == 2){
-    //     playerHp -= 3
-    // } else if (selectSkill == 5 || botCast1 == 2){
-    //     playerHp -= 2
-    // } else{
-    //     playerHp -= 1
-    // }
-    playerHp -= 1
+    if (selectSkill == 9){
+        textRoundTotal.innerHTML += ", но невиданный щит спас вас от урона :)"
+    } else if(selectSkill == 5 && botCast1 == 2){
+        playerHp -= 3
+    } else if (selectSkill == 5 || botCast1 == 2){
+        playerHp -= 2
+    } else{
+        playerHp -= 1
+    }
     calcHpAvatarServ()
 }
 
 function botHpLose(){
-    // if (selectSkill == 5 && botCast1 == 2){
-    //     botHp -= 3
-    // } else if(selectSkill == 5 || botCast1 == 2){
-    //     botHp -= 2
-    // }else {
-    //     botHp -= 1
-    // }
-    botHp -= 1
-    BotHpText.innerHTML = "BOT HP "+ botHp
+    if (selectSkill == 5 && botCast1 == 2){
+        botHp -= 3
+    } else if(selectSkill == 5 || botCast1 == 2){
+        botHp -= 2
+    }else {
+        botHp -= 1
+    }
+    ws.clients.forEach(client => {
+                if (client.readyState === 1) {
+                    client.send(JSON.stringify({
+                        type: "botHpStatus",
+                        value: botHp
+                    }));
+                }
+            })
     if(botHp <= 0){
         botHp = 0
         setTimeout(() => {
@@ -198,16 +234,81 @@ function botHpLose(){
     }
 }
 
+function endRoundTimer(){
+    let defaultTimer = 5
+
+    roundCount += 1
+
+    intervalTimerEndRound = setInterval(() => {
+        defaultTimer-=1
+        // textTimerRound.innerHTML = "TIME: " + defaultTimer +" s"
+        ws.clients.forEach(client => {
+            if (client.readyState === 1) {
+                client.send(JSON.stringify({
+                    type: "EndTimerUpdate",
+                    value: defaultTimer
+                }))
+            }
+        })
+
+        if (defaultTimer <= 0){
+            clearInterval(intervalTimerEndRound)
+            ws.clients.forEach(client => {
+                if (client.readyState === 1) {
+                    client.send(JSON.stringify({
+                        type: "EndTimerClose",
+                    }))
+                }
+            })
+            startRoundTimer()
+            textSkills()
+            // roundTimer()
+        }
+    }, "1000")
+
+    ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "roundScreenState",
+                value: roundCount,
+                value2: botChooseGesture1
+            }));
+        }
+    })
+}
 
 function lose(){
-    clearInterval(intervalTimer)
-    loseWinScreen.style.display = "flex"
+    clearInterval(timerInterval)
+    ws.clients.forEach(client => {
+                    if (client.readyState === 1) {
+                        client.send(JSON.stringify({
+                            type: "loseGame",
+                        }));
+                    }
+                    })
 }
 
 function win(){
-    clearInterval(intervalTimer)
-    loseWinText.innerHTML = "Ты выйграл!!!"
-    loseWinScreen.style.display = "flex"
+    clearInterval(timerInterval)
+    ws.clients.forEach(client => {
+                    if (client.readyState === 1) {
+                        client.send(JSON.stringify({
+                            type: "winGame",
+                        }));
+                        }
+                        })
+}
+
+
+function textSkills(){
+    ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "TextSkill",
+                value: selectSkill
+            }));
+        }
+    })
 }
 
 function calcHpAvatarServ(){
@@ -264,21 +365,6 @@ function calcHpAvatarServ(){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function botChooseGesture(Group) {
     const gestures = Object.keys(gesture_wins)
     // тотальный ужас,короче фильтрует весь лист от 1 группы и бот пикает жесты без неё
@@ -304,7 +390,6 @@ function botMana(){
         botManaCount = 0
     }
 
-    testManaTEXT.innerHTML = botManaCount // UDALIT POTOM
 }
 
 
@@ -381,23 +466,138 @@ function botInvoker(){
 
 function botCast(){
     botInvokerNum = botInvoker()
-    textBotSkill.innerHTML = "Противник применил скилл:"
 
     if(botInvokerNum == 1){
         botManaCount -= 4
-        textBotSkill.innerHTML += "Заблокировать тебе Эээ,какую то группу,я ещё не сделал"
         // Придумать как заблокировать игроку одну из 4 стихий
     } else if(botInvokerNum == 2){
-        alert("Bot skill 2")
         botManaCount -= 5
-        textBotSkill.innerHTML += "Увеличить урон!"
+        ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "botTextSkill",
+                value: "Противник применил скилл: Увеличить урон!"
+            }));
+        }
+        })
         return 2
     } else if(botInvokerNum == 3){
-        alert("Bot skill 3")
         botManaCount -= 5
         botHp += 1
-        textBotSkill.innerHTML += "Противник решил похилиться"
+        ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "botTextSkill",
+                value: "Противник применил скилл: Хилл"
+            }));
+        }
+        })
     } else{
-        textBotSkill.innerHTML += "Противник решил пропустить ход"
+        ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "botTextSkill",
+                value: "Противник решил пропустить ход"
+            }));
+        }
+        })
     }
+}
+
+
+let playerManaCount = 2
+let divManaHeight = 450
+
+function calcMana(){
+    divManaHeight = 450 - (playerManaCount*50)
+    ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "calcMana",
+                value: divManaHeight,
+                value2: playerManaCount
+            }));
+        }
+    })
+    if (playerManaCount >= 10){
+        playerManaCount = 10
+    }
+}
+
+function roundMana(){
+    if (playerManaCount < 10){
+        playerManaCount+= 2
+    }
+    calcMana()
+}
+
+function firstSkills(skill){
+    if (skill == "first" && playerManaCount >= 4){
+        playerManaCount-= 4
+        selectSkill = 1
+    } else if (skill == "second" && playerManaCount >= 4){
+        playerManaCount-= 4
+        selectSkill = 2
+    } else if (skill == "third" && playerManaCount >= 4){
+        playerManaCount-= 4
+        selectSkill = 3
+    } else if (skill == "fourth" && playerManaCount >= 4){
+        playerManaCount-= 4
+        selectSkill = 4
+    }
+    calcMana()
+    textSkills()
+}
+
+function allSkills(skill){
+    if (skill == "damage" && playerManaCount >= 3 && selectSkill == 0){ // damage uvel
+        playerManaCount-= 3
+        selectSkill = 5
+    } else if(skill == "heal" && playerManaCount >= 5 && selectSkill == 0){ // pohill 
+        playerManaCount-= 5
+        selectSkill = 6
+        playerHp += 1
+    } else if(skill == "equalGesture" && playerManaCount >= 2 && selectSkill == 0){ // ravnie gestures otkl
+        playerManaCount-= 2
+        selectSkill = 7
+    } else if(skill == "trap" && playerManaCount >= 4 && selectSkill == 0){ // trap
+        playerManaCount-= 4
+        selectSkill = 8
+    } else if(skill == "invincible" && playerManaCount >= 8 && selectSkill == 0){ // neujazvimost
+        playerManaCount -= 8
+        selectSkill = 9
+    } else if (selectSkill != 0) {
+        ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "selectSkillMsg",
+            }));
+        }
+        })
+    }
+    calcMana()
+    textSkills()
+    calcHpAvatarServ()
+}
+
+function fullRestart(){
+    playerHp = 6
+    botHp = 6
+    selectSkill = 0
+    roundCount = 1
+    playerManaCount = 2
+    botManaCount = 2
+}
+
+function playAgain() {
+    ws.clients.forEach(client => {
+        if (client.readyState === 1) {
+            client.send(JSON.stringify({
+                type: "gameFullRestart"
+            }));
+        }
+        })
+    fullRestart()
+    calcHpAvatarServ()
+    calcMana()
 }

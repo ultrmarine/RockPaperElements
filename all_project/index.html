@@ -52,7 +52,7 @@
         <!-- див который показывает раунд -->
         <div class="div-round">
             <h1 class="text-round">ROUND</h1>
-            <h1 id="text-round-count">0</h1>
+            <h1 id="text-round-count">1</h1>
         </div>
 
 
@@ -69,16 +69,16 @@
         <div class="div-skills">
             <button id="first-skill-btn">Заблокировать противнику одну из чётырёх групп жестов на следующий ход - 4 маны</button>
             <div id="div-first-skill" style="display: none;">
-                <button class="first-skills-btn">Первую группу жестов</button>
-                <button class="first-skills-btn">Вторую группу жестов</button>
-                <button class="first-skills-btn">Третью группу жестов</button>
-                <button class="first-skills-btn">Четвёртую группу жестов</button>
+                <button class="first-skills-btn" data-firstskill="first">Первую группу жестов</button>
+                <button class="first-skills-btn" data-firstskill="second">Вторую группу жестов</button>
+                <button class="first-skills-btn" data-firstskill="third">Третью группу жестов</button>
+                <button class="first-skills-btn" data-firstskill="fourth">Четвёртую группу жестов</button>
             </div>
-            <button id="second-skill-btn">Увеличить свой урон на 1,но и проходящий по себе урон на 1 на этот раунд - 3 маны</button>
-            <button id="third-skill-btn">Отхил на 1 хп - 5 маны</button>
-            <button id="fourth-skill-btn">Отключить "равные жесты" для противника - 2 маны</button>
-            <button id="fifth-skill-btn">Поставить ловушку на жест выбраный жест - 4 маны</button>
-            <button id="sixth-skill-btn">Полная неуязвимость на 1 ход - 8 маны</button>
+            <button id="AllSkill-btn" data-allskill="damage">Увеличить свой урон на 1,но и проходящий по себе урон на 1 на этот раунд - 3 маны</button>
+            <button id="AllSkill-btn" data-allskill="heal">Отхил на 1 хп - 5 маны</button>
+            <button id="AllSkill-btn" data-allskill="equalGesture">Отключить "равные жесты" для противника - 2 маны</button>
+            <button id="AllSkill-btn" data-allskill="trap">Поставить ловушку на жест выбраный жест - 4 маны</button>
+            <button id="AllSkill-btn" data-allskill="invincible">Полная неуязвимость на 1 ход - 8 маны</button>
         </div>
         <!-- див с маной -->
         <div class="div-mana">
