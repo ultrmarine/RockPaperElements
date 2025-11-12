@@ -1,17 +1,109 @@
-const socket = new WebSocket("ws://REDACTED_IP:3000"); // socket
+(function () {
+    const socket = new WebSocket("ws://REDACTED_IP:3000")
+    
 
-socket.addEventListener("message", event => {
-    console.log("Сообщение от сервера:", event);
+    function send(type, value) {
+        const msg = JSON.stringify({ type, value })
+        socket.send(msg)
+    }
+
+    outside = {
+        chooseGesture: (gesture) => send("playerGestureChoice", gesture),
+        firstSkill: (skill) => send("firstSkill", skill),
+        skills: (skill) => send("Skills", skill),
+        trapChoice: (trap) => send("trapChoice", trap),
+        setAvatar: (avatar) => send("AvatarImg", avatar),
+        confirm: () => send("confirmBtn"),
+        playAgain: () => send("playAgain"),
+        startTimer: () => send("startTimer")
+    }
+
+    socket.addEventListener("message", event => {
+        const data = JSON.parse(event.data);
+
+        switch(data.type){
+            case "timerUpdate":
+                textTimer.innerHTML = `TIME: ${data.value} s`
+                break
+            case "roundStatus":
+                textRoundTotal.innerHTML = data.value
+                break
+            case "roundScreenState":
+                if (roundScreen.style.display == "none"){
+                    roundScreen.style.display = 'flex'
+                }
+                textRoundCount.innerHTML = data.value
+                textRoundScreen.innerHTML = "Конец " + (data.value-1) + " раунда"
+                textEnemyMove.innerHTML = "Противник сыграл " + data.value2
+                gameScreen.style.pointerEvents = "none"    
+                break
+            case "EndTimerUpdate":
+                textTimerRound.innerHTML = "TIME: " + data.value +" s"
+                break
+            case "EndTimerClose":
+                roundScreen.style.display = 'none'
+                gameScreen.style.pointerEvents = "auto"
+                textTimerRound.innerHTML = "TIME: 5 s"
+                textTimer.innerHTML = `TIME: 60 s`
+                break
+            case "testHp":
+                calcHpAvatar(data.value,data.value2,data.value3,data.value4)
+                break
+            case "Hp":
+                calcHpAvatar(data.value,data.value2,data.value3,data.value4)
+                break
+            case "loseGame":
+                loseWinScreen.style.display = "flex"
+                break
+            case "winGame":
+                loseWinText.innerHTML = "Ты выйграл!!!"
+                loseWinScreen.style.display = "flex"
+                break
+            case "botHpStatus":
+                BotHpText.innerHTML = "BOT HP "+ data.value
+                break
+            case "TextSkill":
+                textSkills(data.value)
+                break
+            case "calcMana":
+                divManaCount.style.height = data.value + "px"
+                divManaCount.style.display = "flex"
+                textManaCount.innerHTML = data.value2 + " mana"
+                if (data.value2 >= 10){
+                    divManaCount.style.display = "none"
+                }
+                if (data.value2 <= 0){
+                    divManaCount.style.display = "none"
+                }
+                break
+            case "botTextSkill":
+                textBotSkill.innerHTML = data.value
+                break
+            case "selectSkillMsg":
+                alert("Недостаточно маны или применён другой скилл!")
+                break
+            case "BotTrap":
+                alert("БОТ ПОПАЛ В ЛОВУШКУ")
+                break
+            case "gameFullRestart":
+                gameScreen.style.pointerEvents = "auto"
+                startScreen.style.display = 'flex'
+                loseWinScreen.style.display = "none"
+                gameScreen.style.display = 'none'
+                BotHpText.innerHTML = "BOT HP 6"
+                break
+            default:
+                console.log("undef")
+        }
 });
+})()
 
 const startBtn = document.getElementById('start-btn')
 const startScreen = document.getElementById('start-screen')
 const gameScreen = document.getElementById('game-screen')
 const preGameScreen = document.getElementById("pre-game-screen")
-
 const playBtn = document.getElementById("play-btn")
 const closePreGameScreen = document.getElementById("close-pre-game-screen")
-
 const confirmBtn = document.getElementById("confirm-btn")
 const roundScreen = document.getElementById("round-screen")
 const nickInp = document.getElementById("nick-input")
@@ -19,23 +111,35 @@ const textNickname = document.getElementById("text-nickname")
 const textTimer = document.getElementById("text-timer")
 const textTimerRound = document.getElementById("text-timer-round-screen")
 const textRoundScreen = document.getElementById("text-round-screen")
-
 const loseWinScreen = document.getElementById("lose-win-screen")
 const loseWinText = document.getElementById("lose-win-text")
-
 const avatarImg = document.getElementById("avatar-img")
-
 let selectImg = document.getElementById("avatar-select")
-
 const playAgainBtn = document.getElementById("play-again-btn")
-
 const textAppliedSkill = document.getElementById("text-applied-skill")
-
 const textRoundTotal = document.getElementById("text-round-total")
-
 let textRoundCount = document.getElementById("text-round-count")
-
 const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
+let textEnemyMove = document.getElementById("text-enemy-move")
+const divManaCount = document.getElementById("div-mana-count")
+const textManaCount = document.getElementById("text-mana-count")
+const textBotSkill = document.getElementById("text-bot-skill")
+const firstHp = document.getElementById("first-hp")
+const secondHp = document.getElementById("second-hp")
+const thirdHp = document.getElementById("third-hp")
+const BotHpText = document.getElementById("bot-hp")
+const gestureAllButtons = document.querySelectorAll("[data-gesture]")
+let textPlayerChoice = document.getElementById("text-player-choice")
+let playerGestureChoice = "-"
+const firstSkillBtn = document.getElementById("first-skill-btn")
+let divFirstSkill = document.getElementById("div-first-skill")
+const allSkillsBtn = document.querySelectorAll("#AllSkill-btn")
+const skillsBtn = document.querySelectorAll(".first-skills-btn")
+
+
+// socket.addEventListener("message", event => {
+//     console.log("Сообщение от сервера:", event);
+// });
 
 startBtn.addEventListener('click', () => {
     startScreen.style.display = 'none'
@@ -53,21 +157,14 @@ playBtn.addEventListener('click', () => {
     } else{
         if (selectImg.value == "wizard"){
             avatarImg.src = "assets/avatars/wizard1.png"
-            socket.send(JSON.stringify({
-                    type: "AvatarImg",
-                    value: "wizard"
-                }));
+            outside.setAvatar("wizard")
         }
         if (selectImg.value == "elemental"){
             avatarImg.src = "assets/avatars/elemental1.png"
-            socket.send(JSON.stringify({
-                    type: "AvatarImg",
-                    value: "elemental"
-                }));
+            outside.setAvatar("elemental")
+            
         }
-        socket.send(JSON.stringify({
-                    type: "startTimer"
-                }));
+        outside.startTimer()
         textNickname.innerHTML = nickInp.value
         gameScreen.style.display = 'flex'
         preGameScreen.style.display = 'none'
@@ -75,103 +172,6 @@ playBtn.addEventListener('click', () => {
 })
 
 // let data1,data2,data3,data4;
-let textEnemyMove = document.getElementById("text-enemy-move")
-
-const divManaCount = document.getElementById("div-mana-count")
-const textManaCount = document.getElementById("text-mana-count")
-
-const textBotSkill = document.getElementById("text-bot-skill")
-
-socket.addEventListener("message", event => {
-    const data = JSON.parse(event.data);
-
-    if (data.type === "timerUpdate"){
-        textTimer.innerHTML = `TIME: ${data.value} s`
-    }
-    if (data.type === "serverMessage"){
-        console.log("server:", data.value);
-    }
-    if (data.type === "roundStatus"){
-        textRoundTotal.innerHTML = data.value
-    }
-    if (data.type === "roundScreenState"){
-        if (roundScreen.style.display == "none"){
-            roundScreen.style.display = 'flex'
-        }
-        textRoundCount.innerHTML = data.value
-        textRoundScreen.innerHTML = "Конец " + (data.value-1) + " раунда"
-        textEnemyMove.innerHTML = "Противник сыграл " + data.value2
-        gameScreen.style.pointerEvents = "none"
-    }
-    if (data.type === "EndTimerUpdate"){
-        textTimerRound.innerHTML = "TIME: " + data.value +" s"
-    }
-    if (data.type === "EndTimerClose"){
-        roundScreen.style.display = 'none'
-        gameScreen.style.pointerEvents = "auto"
-        textTimerRound.innerHTML = "TIME: 5 s"
-        textTimer.innerHTML = `TIME: 60 s`
-    }
-    if (data.type === "testHp" ){
-        calcHpAvatar(data.value,data.value2,data.value3,data.value4)
-    }
-    if (data.type === "Hp" ){
-        // console.log("TESTTETESTETESTT",data1)
-        // data1 = data.value
-        // data2 = data.value2
-        // data3 = data.value3
-        // data4 = data.value4
-        calcHpAvatar()
-    }
-    if (data.type === "loseGame" ){
-        loseWinScreen.style.display = "flex"
-    }
-    if (data.type === "winGame" ){
-        loseWinText.innerHTML = "Ты выйграл!!!"
-        loseWinScreen.style.display = "flex"
-    }
-    if (data.type === "botHpStatus"){
-        BotHpText.innerHTML = "BOT HP "+ data.value
-    }
-    if (data.type === "TextSkill"){
-        textSkills(data.value)
-    }
-    if (data.type === "calcMana"){
-        divManaCount.style.height = data.value + "px"
-        divManaCount.style.display = "flex"
-        textManaCount.innerHTML = data.value2 + " mana"
-        if (data.value2 == 10){
-            divManaCount.style.display = "none"
-        }
-        if (divManaHeight <= 0){
-            textManaCount.style.display = "none"
-        }
-    }
-    if (data.type === "botTextSkill"){
-        textBotSkill.innerHTML = data.value
-    }
-    if (data.type === "selectSkillMsg"){
-        alert("Недостаточно маны или применён другой скилл!")
-    }
-
-    if (data.type === "BotTrap"){
-        alert("БОТ ПОПАЛ В ЛОВУШКУ")
-    }
-
-    if (data.type === "gameFullRestart"){
-        gameScreen.style.pointerEvents = "auto"
-        startScreen.style.display = 'flex'
-        loseWinScreen.style.display = "none"
-        gameScreen.style.display = 'none'
-        BotHpText.innerHTML = "BOT HP 6"
-    }
-});
-
-const firstHp = document.getElementById("first-hp")
-const secondHp = document.getElementById("second-hp")
-const thirdHp = document.getElementById("third-hp")
-
-const BotHpText = document.getElementById("bot-hp")
 
 function calcHpAvatar(data,data2,data3,data4){
     firstHp.src = data
@@ -180,29 +180,18 @@ function calcHpAvatar(data,data2,data3,data4){
     avatarImg.src = data4
 }
 
-
-const gestureAllButtons = document.querySelectorAll("[data-gesture]")
-
-let textPlayerChoice = document.getElementById("text-player-choice")
-
-let playerGestureChoice = "-"
 gestureAllButtons.forEach(button => {
     button.addEventListener("click", () => {
         playerGestureChoice = button.dataset.gesture
         textPlayerChoice.innerHTML = "Твой выбор: " + playerGestureChoice
-        socket.send(JSON.stringify({
-                    type: "playerGestureChoice",
-                    value: playerGestureChoice
-                }));
+        outside.chooseGesture(playerGestureChoice)
     })
 })
 
 confirmBtn.addEventListener("click", ()=>{
     console.log(playerGestureChoice)
     if (playerGestureChoice != "-"){
-        socket.send(JSON.stringify({
-                    type: "confirmBtn",
-                }))
+        outside.confirm()
     } else{
         alert("Для подтверждения нужно выбрать жест")
     }
@@ -249,11 +238,6 @@ function textSkills(skill){
     textAppliedSkill.style.fontSize = fontSize
 }
 
-
-
-const firstSkillBtn = document.getElementById("first-skill-btn")
-let divFirstSkill = document.getElementById("div-first-skill")
-
 firstSkillBtn.addEventListener("click", () => {
     if (divFirstSkill.style.display != "flex") {
         divFirstSkill.style.display = "flex"
@@ -262,43 +246,28 @@ firstSkillBtn.addEventListener("click", () => {
     }
 })
 
-const skillsBtn = document.querySelectorAll(".first-skills-btn")
-
 
 skillsBtn.forEach(button =>{
     button.addEventListener("click", () => {
         firstSkills = button.dataset.firstskill
-        socket.send(JSON.stringify({
-                    type: "firstSkill",
-                    value: firstSkills
-                }));
+        outside.firstSkill(firstSkills)
     })
 })
-
-const allSkillsBtn = document.querySelectorAll("#AllSkill-btn")
 
 allSkillsBtn.forEach(button =>{
     button.addEventListener("click", () => {
         allSkills = button.dataset.allskill
         if (allSkills != "trap"){
-            socket.send(JSON.stringify({
-                    type: "Skills",
-                    value: allSkills
-                }));
+            outside.skills(allSkills)
         } else if (allSkills === "trap"){
             let confirmBtn = confirm(`Вы точно хотите поставить ловушку на ${playerGestureChoice}?`)
             if (confirmBtn){
-                socket.send(JSON.stringify({
-                    type: "trapChoice",
-                    value: playerGestureChoice
-                }));
+                outside.trapChoice(playerGestureChoice)
             }
         }
     })
 })
 
 playAgainBtn.addEventListener("click", () =>{
-    socket.send(JSON.stringify({
-        type: "playAgain"
-    }));
+    outside.playAgain()
 })

@@ -15,49 +15,80 @@ server.listen(PORT, "0.0.0.0", () => {
     console.log(`Сервер запущен на http://0.0.0.0:${PORT}`);
 })
 
+// защитная часть
+const crypto = require("crypto"); // шифровка и проверка ключей
+
+const allowedMsg = [
+    "startTimer",
+    "playerGestureChoice",
+    "confirmBtn",
+    "AvatarImg",
+    "firstSkill",
+    "Skills",
+    "trapChoice",
+    "playAgain"
+]
+
+// пока не трогаю,так как не могу придумать,как со стороны клиента не палит секретный код
+function verifyMessage(data) {
+    const {type,value,signature} = data
+    const verify = crypto.createHmac("sha256", secretCode).update(type + (value || "")).digest("hex")
+    return signature === verify
+}
 
 let playerGestureChoice = "-"
 let selectImgServ
 let skill8PlayerChoice = "-"
 ws.on("connection", socket => {
-    console.log("подключился");
+    console.log("подключился")
+    
 
     socket.on("message", msg => {
         // const data = msg.toString();
         const data = JSON.parse(msg)
 
+        if (!allowedMsg.includes(data.type)){
+            console.warn("Не существующая комманда");
+            socket.close(3001, "Пошёл вон отсюда");
+            return
+        }
+
         console.log("Сообщение klienta:", data);
 
-        if (data.type === "startTimer") {
-            startRoundTimer();
-        }
-        if (data.type === "playerGestureChoice" && gesture_wins[data.value]){ // сделать сравнение жестов
-            playerGestureChoice = data.value
-        }
-        if (data.type === "confirmBtn"){
-            roundEnd()
-        }
-        if (data.type === "AvatarImg"){
-            selectImgServ = data.value
-        }
-        if (data.type === "firstSkill"){
-            firstSkills(data.value)
+        switch(data.type){
+            case "playerGestureChoice":
+                if (gesture_wins[data.value]) {
+                    playerGestureChoice = data.value
+                }
+                break
+            case "startTimer":
+                startRoundTimer();
+                break
+            case "confirmBtn":
+                roundEnd()
+                break
+            case "AvatarImg":
+                selectImgServ = data.value
+                break
+            case "firstSkill":
+                firstSkills(data.value)
+                break
+            case "Skills":
+                allSkills(data.value)
+                break
+            case "trapChoice":
+                if (gesture_wins[data.value]){
+                    skill8PlayerChoice = data.value
+                    allSkills("trap")
+                }
+                break
+            case "playAgain":
+                if(playerHp === 0 || botHp === 0){
+                    playAgain()
+                }
+                break
         }
 
-        if (data.type === "Skills"){
-            allSkills(data.value)
-        }
-
-        if (data.type === "trapChoice"){
-            skill8PlayerChoice = data.value
-            allSkills("trap")
-        }
-
-        if (data.type === "playAgain"){
-            if(playerHp === 0 || botHp === 0){
-                playAgain()
-            }
-        }
     });
 });
 
@@ -65,8 +96,11 @@ let selectSkill = 0
 let roundCount = 1
 let botChooseGesture1
 let timerInterval
+let timerRun = false
 
 function startRoundTimer() {
+    if (timerRun) return
+    timerRun = true
     let defaultTimer = 60;
     botChooseGesture1 = botChooseGesture()
     timerInterval = setInterval(() => {
@@ -85,6 +119,7 @@ function startRoundTimer() {
             if (playerGestureChoice == "-"){
                 playerGestureChoice = "rock"
             }
+            timerRun = false
             roundEnd()
         }
     }, 1000);
@@ -252,6 +287,7 @@ function endRoundTimer(){
         })
 
         if (defaultTimer <= 0){
+            timerRun = false
             clearInterval(intervalTimerEndRound)
             ws.clients.forEach(client => {
                 if (client.readyState === 1) {
@@ -587,6 +623,7 @@ function fullRestart(){
     roundCount = 1
     playerManaCount = 2
     botManaCount = 2
+    timerRun = false
 }
 
 function playAgain() {
