@@ -1,11 +1,12 @@
 // server.js
 const express = require("express");
-const { WebSocketServer } = require("ws");
+// const { WebSocketServer } = require("ws");
 const { createServer } = require("http");
+const socketIO = require("socket.io")
 
 const app = express();
 const server = createServer(app);
-const ws = new WebSocketServer({ server });
+const ws = socketIO(server);
 
 app.use(express.static("all_project"));
 
@@ -36,91 +37,146 @@ function verifyMessage(data) {
     return signature === verify
 }
 
+const players = new Map()
+
 let playerGestureChoice = "-"
-let selectImgServ
+// let selectImgServ
 let skill8PlayerChoice = "-"
-ws.on("connection", socket => {
-    console.log("подключился")
+
+ws.on("connection", function (socket){
+    console.log("igrok:", socket.id)
+
+    players.set(socket.id, {
+        hp: 6,
+        mana: 2,
+        botHp: 6,
+        botMana: 2,
+        gesture: "-",
+        botChoose: "-",
+        avatar: "skeleton",
+        selectSkill: 0,
+        roundCount: 1,
+        timerRun: false,
+        timerInterval: null,
+        intervalTimerEndRound: null
+    })
+
+    socket.on("disconnect", function (){
+        players.delete(socket.id)
+        console.log("DEL:",socket.id)
+    })
+
+    socket.emit("init", players.get(socket.id))
+
+    socket.on("chooseGesture", (gesture) => {
+        const player = players.get(socket.id)
+        if (!player) return
+        player.gesture = gesture
+        console.log("TEST",socket.id)
+    })
     
+    socket.on("AvatarImg", (avatar) =>{
+        const player = players.get(socket.id)
+        if (!player) return
+        player.avatar = avatar
+        calcHpAvatarServ(socket)
+    })
 
-    socket.on("message", msg => {
-        // const data = msg.toString();
-        const data = JSON.parse(msg)
+    socket.on("startTimer", () =>{
+        const player = players.get(socket.id)
+        if (!player) return
+        startRoundTimer(socket)
+    })
 
-        if (!allowedMsg.includes(data.type)){
-            console.warn("Не существующая комманда");
-            socket.close(3001, "Пошёл вон отсюда");
-            return
-        }
+    socket.on("confirmBtn", () =>{
+        const player = players.get(socket.id)
+        if (!player) return
+        roundEnd(socket)
+    })
+})
 
-        console.log("Сообщение klienta:", data);
+// ws.on("connection", (socket, req) => {
+//     const randomNumber = Math.random()
+//     let a = 1
+//     clients.set(a,socket)
+//     a
+//     console.log("подключился",clients)
 
-        switch(data.type){
-            case "playerGestureChoice":
-                if (gesture_wins[data.value]) {
-                    playerGestureChoice = data.value
-                }
-                break
-            case "startTimer":
-                startRoundTimer();
-                break
-            case "confirmBtn":
-                roundEnd()
-                break
-            case "AvatarImg":
-                selectImgServ = data.value
-                break
-            case "firstSkill":
-                firstSkills(data.value)
-                break
-            case "Skills":
-                allSkills(data.value)
-                break
-            case "trapChoice":
-                if (gesture_wins[data.value]){
-                    skill8PlayerChoice = data.value
-                    allSkills("trap")
-                }
-                break
-            case "playAgain":
-                if(playerHp === 0 || botHp === 0){
-                    playAgain()
-                }
-                break
-        }
+//     console.log(clients.get(1))
 
-    });
-});
+//     let test = clients.get(1)
+
+//     test.on("message", msg => {
+//         // const data = msg.toString();
+//         const data = JSON.parse(msg)
+
+//         if (!allowedMsg.includes(data.type)){
+//             console.warn("Не существующая комманда");
+//             socket.close(3001, "Пошёл вон отсюда");
+//             return
+//         }
+
+//         console.log("Сообщение klienta:", data);
+
+//         switch(data.type){
+//             case "playerGestureChoice":
+//                 if (gesture_wins[data.value]) {
+//                     playerGestureChoice = data.value
+//                 }
+//                 break
+//             case "startTimer":
+//                 startRoundTimer();
+//                 break
+//             case "confirmBtn":
+//                 roundEnd()
+//                 break
+//             case "AvatarImg":
+//                 selectImgServ = data.value
+//                 break
+//             case "firstSkill":
+//                 firstSkills(data.value)
+//                 break
+//             case "Skills":
+//                 allSkills(data.value)
+//                 break
+//             case "trapChoice":
+//                 if (gesture_wins[data.value]){
+//                     skill8PlayerChoice = data.value
+//                     allSkills("trap")
+//                 }
+//                 break
+//             case "playAgain":
+//                 if(playerHp === 0 || botHp === 0){
+//                     playAgain()
+//                 }
+//                 break
+//         }
+
+//     });
+// });
 
 let selectSkill = 0
 let roundCount = 1
-let botChooseGesture1
-let timerInterval
-let timerRun = false
 
-function startRoundTimer() {
-    if (timerRun) return
-    timerRun = true
+
+function startRoundTimer(socket) {
+    const player = players.get(socket.id)
+    if (!player) return
+    if (player.timerRun) return
+    player.timerRun = true
+
     let defaultTimer = 60;
-    botChooseGesture1 = botChooseGesture()
-    timerInterval = setInterval(() => {
+    player.botChoose = botChooseGesture()
+    player.timerInterval = setInterval(() => {
         defaultTimer--;
-        ws.clients.forEach(client => {
-            if (client.readyState === 1) {
-                client.send(JSON.stringify({
-                    type: "timerUpdate",
-                    value: defaultTimer
-                }))
-            }
-        });
-
+        socket.emit("timerUpdate", defaultTimer)
         if (defaultTimer <= 0) {
-            clearInterval(timerInterval)
-            if (playerGestureChoice == "-"){
-                playerGestureChoice = "rock"
+            clearInterval(player.timerInterval)
+            player.timerRun = false
+            if (player.gesture == "-"){
+                player.gesture = "rock"
             }
-            timerRun = false
-            roundEnd()
+            roundEnd(socket)
         }
     }, 1000);
 }
@@ -150,189 +206,225 @@ let playerHp = 6
 let botHp = 6
 let botCast1
 
-function roundEnd(){
-    if(playerGestureChoice != "-") {
-        clearInterval(timerInterval)
-        roundMana()
-        botCast1 = botCast()
-        botMana()
+function roundEnd(socket){
+    const player = players.get(socket.id)
+    if (!player) return
 
-        if (selectSkill == 8 && skill8PlayerChoice == botChooseGesture1){
-            // потом сделать,либо потерю хп,либо потерю маны
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "BotTrap"
-                    }));
-                }
-            })
-            skill8PlayerChoice = ""
-        }
+    if(player.gesture != "-") {
+        clearInterval(player.timerInterval)
+        player.timerRun = false
+        // roundMana()
+        // botCast1 = botCast()
+        // botMana()
 
-        if (playerGestureChoice == botChooseGesture1){
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "roundStatus",
-                        value: "У вас ничья"
-                    }));
-                }
-            })
-        selectSkill = 0
-        } else if(gesture_wins[playerGestureChoice].includes(botChooseGesture1) && gesture_wins[botChooseGesture1].includes(playerGestureChoice) && selectSkill != 7){ //ravnie по силе жесты проверка
+        // if (player.selectSkill == 8 && skill8PlayerChoice == player.botChoose){
+        //     // потом сделать,либо потерю хп,либо потерю маны
+        //     ws.clients.forEach(client => {
+        //         if (client.readyState === 1) {
+        //             client.send(JSON.stringify({
+        //                 type: "BotTrap"
+        //             }));
+        //         }
+        //     })
+        //     skill8PlayerChoice = ""
+        // }
+
+        if (player.gesture == player.botChoose){
+            socket.emit("roundStatus", "У вас ничья")
+
+            // ws.clients.forEach(client => {
+            //     if (client.readyState === 1) {
+            //         client.send(JSON.stringify({
+            //             type: "roundStatus",
+            //             value: "У вас ничья"
+            //         }));
+            //     }
+            // })
+            player.selectSkill = 0
+        } else if(gesture_wins[player.gesture].includes(player.botChoose) && gesture_wins[player.botChoose].includes(player.gesture) && player.selectSkill != 7){ //ravnie по силе жесты проверка
             //доработать
-                ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "roundStatus",
-                        value: "Сыграны равные по силе жесты вы оба теряете hp"
-                    }));
-                }
-                })
-            playerHpLose()
-            botHpLose()
-            selectSkill = 0
-        } else if (gesture_wins[playerGestureChoice].includes(botChooseGesture1)){
-                ws.clients.forEach(client => {
-                    if (client.readyState === 1) {
-                        client.send(JSON.stringify({
-                            type: "roundStatus",
-                            value: "Ты выйграл"
-                        }));
-                    }
-                    })
-            if(selectSkill == 7 && gesture_wins[botChooseGesture1].includes(playerGestureChoice)){
-                ws.clients.forEach(client => {
-                    if (client.readyState === 1) {
-                        client.send(JSON.stringify({
-                            type: "roundStatus",
-                            value: "Равный жест не сработал.Ты выйграл"
-                        }));
-                    }
-                    })
+                socket.emit("roundStatus","Сыграны равные по силе жесты вы оба теряете hp")
+                // ws.clients.forEach(client => {
+                // if (client.readyState === 1) {
+                //     client.send(JSON.stringify({
+                //         type: "roundStatus",
+                //         value: "Сыграны равные по силе жесты вы оба теряете hp"
+                //     }));
+                // }
+                // })
+
+
+            playerHpLose(socket)
+            botHpLose(socket)
+            player.selectSkill = 0
+        } else if (gesture_wins[player.gesture].includes(player.botChoose)){
+                socket.emit("roundStatus","Ты выйграл")
+                // ws.clients.forEach(client => {
+                //     if (client.readyState === 1) {
+                //         client.send(JSON.stringify({
+                //             type: "roundStatus",
+                //             value: "Ты выйграл"
+                //         }));
+                //     }
+                //     })
+            if(player.selectSkill == 7 && gesture_wins[player.gesture].includes(playerGestureChoice)){
+                socket.emit("roundStatus","Равный жест не сработал.Ты выйграл")
+                // ws.clients.forEach(client => {
+                //     if (client.readyState === 1) {
+                //         client.send(JSON.stringify({
+                //             type: "roundStatus",
+                //             value: "Равный жест не сработал.Ты выйграл"
+                //         }));
+                //     }
+                //     })
             }
-            botHpLose()
-            selectSkill = 0
+            botHpLose(socket)
+            player.selectSkill = 0
         } else{
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "roundStatus",
-                        value: "Ты проиграл вамп вамп"
-                    }));
-                }
-            })
-            playerHpLose()
-            selectSkill = 0
+            socket.emit("roundStatus","Ты проиграл вамп вамп")
+            // ws.clients.forEach(client => {
+            //     if (client.readyState === 1) {
+            //         client.send(JSON.stringify({
+            //             type: "roundStatus",
+            //             value: "Ты проиграл вамп вамп"
+            //         }));
+            //     }
+            // })
+
+            playerHpLose(socket)
+            player.selectSkill = 0
         }
-        endRoundTimer()
+        endRoundTimer(socket)
 
     } else{
          //потом заменить алёрт на pop окно по желанию конечно
     }
 }
 
-function playerHpLose(){
-    if (selectSkill == 9){
+function playerHpLose(socket){
+    const player = players.get(socket.id)
+    if (!player) return
+
+    if (player.selectSkill == 9){
         textRoundTotal.innerHTML += ", но невиданный щит спас вас от урона :)"
-    } else if(selectSkill == 5 && botCast1 == 2){
-        playerHp -= 3
-    } else if (selectSkill == 5 || botCast1 == 2){
-        playerHp -= 2
+    } else if(player.selectSkill == 5 && botCast1 == 2){
+        player.hp -= 3
+    } else if (player.selectSkill == 5 || botCast1 == 2){
+        player.hp -= 2
     } else{
-        playerHp -= 1
+        player.hp -= 1
     }
-    calcHpAvatarServ()
+    calcHpAvatarServ(socket)
 }
 
-function botHpLose(){
-    if (selectSkill == 5 && botCast1 == 2){
-        botHp -= 3
-    } else if(selectSkill == 5 || botCast1 == 2){
-        botHp -= 2
+function botHpLose(socket){
+    const player = players.get(socket.id)
+    if (!player) return
+
+    if (player.selectSkill == 5 && botCast1 == 2){
+        player.botHp -= 3
+    } else if(player.selectSkill == 5 || botCast1 == 2){
+        player.botHp -= 2
     }else {
-        botHp -= 1
+        player.botHp -= 1
     }
-    ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "botHpStatus",
-                        value: botHp
-                    }));
-                }
-            })
-    if(botHp <= 0){
-        botHp = 0
+    socket.emit("botHpStatus",player.botHp)
+
+    // ws.clients.forEach(client => {
+    //             if (client.readyState === 1) {
+    //                 client.send(JSON.stringify({
+    //                     type: "botHpStatus",
+    //                     value: botHp
+    //                 }));
+    //             }
+    //         })
+    if(player.botHp <= 0){
+        player.botHp = 0
         setTimeout(() => {
             win()
         },5500)
     }
 }
 
-function endRoundTimer(){
+function endRoundTimer(socket){
+    const player = players.get(socket.id)
+    if (!player) return
+
+
     let defaultTimer = 5
+    player.roundCount += 1
 
-    roundCount += 1
-
-    intervalTimerEndRound = setInterval(() => {
+    player.intervalTimerEndRound = setInterval(() => {
         defaultTimer-=1
-        // textTimerRound.innerHTML = "TIME: " + defaultTimer +" s"
-        ws.clients.forEach(client => {
-            if (client.readyState === 1) {
-                client.send(JSON.stringify({
-                    type: "EndTimerUpdate",
-                    value: defaultTimer
-                }))
-            }
-        })
+        socket.emit("EndTimerUpdate", defaultTimer)
+        // ws.clients.forEach(client => {
+        //     if (client.readyState === 1) {
+        //         client.send(JSON.stringify({
+        //             type: "EndTimerUpdate",
+        //             value: defaultTimer
+        //         }))
+        //     }
+        // })
 
         if (defaultTimer <= 0){
             timerRun = false
-            clearInterval(intervalTimerEndRound)
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "EndTimerClose",
-                    }))
-                }
-            })
-            startRoundTimer()
-            textSkills()
-            // roundTimer()
+            clearInterval(player.intervalTimerEndRound)
+            socket.emit("EndTimerClose")
+            // ws.clients.forEach(client => {
+            //     if (client.readyState === 1) {
+            //         client.send(JSON.stringify({
+            //             type: "EndTimerClose",
+            //         }))
+            //     }
+            // })
+
+            startRoundTimer(socket)
+            // textSkills()
+            
+            
         }
     }, "1000")
 
-    ws.clients.forEach(client => {
-        if (client.readyState === 1) {
-            client.send(JSON.stringify({
-                type: "roundScreenState",
-                value: roundCount,
-                value2: botChooseGesture1
-            }));
-        }
-    })
+    socket.emit("roundScreenState",player.roundCount,player.botChoose)
+    // ws.clients.forEach(client => {
+    //     if (client.readyState === 1) {
+    //         client.send(JSON.stringify({
+    //             type: "roundScreenState",
+    //             value: roundCount,
+    //             value2: botChooseGesture1
+    //         }));
+    //     }
+    // })
 }
 
-function lose(){
+function lose(socket){
+    const player = players.get(socket.id)
+    if (!player) return
+
     clearInterval(timerInterval)
-    ws.clients.forEach(client => {
-                    if (client.readyState === 1) {
-                        client.send(JSON.stringify({
-                            type: "loseGame",
-                        }));
-                    }
-                    })
+    socket.emit("loseGame")
+    // ws.clients.forEach(client => {
+    //                 if (client.readyState === 1) {
+    //                     client.send(JSON.stringify({
+    //                         type: "loseGame",
+    //                     }));
+    //                 }
+    //                 })
 }
 
-function win(){
-    clearInterval(timerInterval)
-    ws.clients.forEach(client => {
-                    if (client.readyState === 1) {
-                        client.send(JSON.stringify({
-                            type: "winGame",
-                        }));
-                        }
-                        })
+function win(socket){
+    const player = players.get(socket.id)
+    if (!player) return
+
+    clearInterval(player.timerInterval)
+    socket.emit("winGame")
+    // ws.clients.forEach(client => {
+    //                 if (client.readyState === 1) {
+    //                     client.send(JSON.stringify({
+    //                         type: "winGame",
+    //                     }));
+    //                     }
+    //                     })
 }
 
 
@@ -347,14 +439,16 @@ function textSkills(){
     })
 }
 
-function calcHpAvatarServ(){
+function calcHpAvatarServ(socket){
+    const player = players.get(socket.id)
+    if (!player) return
 
     const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
     let avatar = ["assets/avatars/skeleton1.jpg","assets/avatars/skeleton2.jpg","assets/avatars/skeleton3.jpg"]
 
-    if (selectImgServ == "wizard"){
+    if (player.avatar == "wizard"){
         avatar = ["assets/avatars/wizard1.png","assets/avatars/wizard2.png","assets/avatars/wizard3.png"]
-    } else if(selectImgServ == "elemental"){
+    } else if(player.avatar == "elemental"){
         avatar = ["assets/avatars/elemental1.png","assets/avatars/elemental2.png","assets/avatars/elemental3.png"]
     }
 
@@ -368,31 +462,11 @@ function calcHpAvatarServ(){
     }
 
     for (let i = 0; i <= 6;i++){
-        if (i == playerHp && playerHp != 0){
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "testHp",
-                        value: testHp[i][0],
-                        value2: testHp[i][1],
-                        value3: testHp[i][2],
-                        value4: testHp[i][3]
-                    }));
-                }
-            })
+        if (i == player.hp && player.hp != 0){
+            socket.emit("testHp", testHp[i][0],testHp[i][1],testHp[i][2],testHp[i][3])
             break
-        } else if (playerHp <= 0) {
-            ws.clients.forEach(client => {
-                if (client.readyState === 1) {
-                    client.send(JSON.stringify({
-                        type: "Hp",
-                        value: hp[2],
-                        value2: hp[2],
-                        value3: hp[2],
-                        value4: avatar[2],
-                    }));
-                }
-            })
+        } else if (player.hp <= 0) {
+            socket.emit("Hp", hp[2],hp[2],hp[2],avatar[2])
             setTimeout(() => {
                 lose()
             },5500)
