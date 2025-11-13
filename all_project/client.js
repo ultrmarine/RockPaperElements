@@ -1,9 +1,5 @@
 (function () {
     const socket = io()
-    
-    socket.on("init", (data) => {
-        player = data;
-    });
 
     // function send(type, value) {
     //     const msg = JSON.stringify({ type, value })
@@ -17,7 +13,7 @@
     out_test = {
         chooseGesture: (gesture) => emit("chooseGesture", gesture),
         firstSkill: (skill) => emit("firstSkill", skill),
-        skills: (skill) => emit("Skills", skill),
+        skills: (skill) => emit("skills", skill),
         trapChoice: (trap) => emit("trapChoice", trap),
         setAvatar: (avatar) => emit("AvatarImg", avatar),
         confirm: () => emit("confirmBtn"),
@@ -71,10 +67,47 @@
         textSkills(skill)
     })
 
+    socket.on("calcMana", (manaHeight,manaCount) => {
+        divManaCount.style.height = manaHeight + "px"
+        divManaCount.style.display = "flex"
+        textManaCount.style.display = "flex"
+        textManaCount.innerHTML = manaCount + " mana"
+        if (manaCount >= 10){
+            divManaCount.style.display = "none"
+        }
+        if (manaCount <= 0){
+            textManaCount.style.display = "none"
+        }
+    })
+
     socket.on("botTextSkill", (botSkill) =>{
         textBotSkill.innerHTML = botSkill
     })
 
+    socket.on("selectSkillMsg", () =>{
+        alert("Недостаточно маны или применён другой скилл!")
+    })
+
+    socket.on("BotTrap", () =>{
+        alert("БОТ ПОПАЛ В ЛОВУШКУ")
+    })
+
+    socket.on("gameFullRestart", () =>{
+        gameScreen.style.pointerEvents = "auto"
+        startScreen.style.display = 'flex'
+        loseWinScreen.style.display = "none"
+        gameScreen.style.display = 'none'
+        BotHpText.innerHTML = "BOT HP 6"
+    })
+
+    socket.on("loseGame", () =>{
+        loseWinScreen.style.display = "flex"
+    })
+
+    socket.on("winGame", () =>{
+        loseWinText.innerHTML = "Ты выйграл!!!"
+        loseWinScreen.style.display = "flex"
+    })
     // outside = {
     //     chooseGesture: (gesture) => send("playerGestureChoice", gesture),
     //     firstSkill: (skill) => send("firstSkill", skill),
@@ -318,25 +351,23 @@ firstSkillBtn.addEventListener("click", () => {
 
 skillsBtn.forEach(button =>{
     button.addEventListener("click", () => {
-        firstSkills = button.dataset.firstskill
-        outside.firstSkill(firstSkills)
+        out_test.firstSkill(button.dataset.firstskill)
     })
 })
 
 allSkillsBtn.forEach(button =>{
     button.addEventListener("click", () => {
-        allSkills = button.dataset.allskill
-        if (allSkills != "trap"){
-            outside.skills(allSkills)
-        } else if (allSkills === "trap"){
+        if (button.dataset.allskill != "trap"){
+            out_test.skills(button.dataset.allskill)
+        } else if (button.dataset.allskill === "trap"){
             let confirmBtn = confirm(`Вы точно хотите поставить ловушку на ${playerGestureChoice}?`)
             if (confirmBtn){
-                outside.trapChoice(playerGestureChoice)
+                out_test.trapChoice(playerGestureChoice)
             }
         }
     })
 })
 
 playAgainBtn.addEventListener("click", () =>{
-    outside.playAgain()
+    out_test.playAgain()
 })
