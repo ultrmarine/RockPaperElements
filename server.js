@@ -38,10 +38,6 @@ function verifyMessage(data) {
 
 const players = new Map()
 
-let playerGestureChoice = "-"
-// let selectImgServ
-// let skill8PlayerChoice = "-"
-
 ws.on("connection", function (socket){
     console.log("igrok:", socket.id)
 
@@ -250,14 +246,6 @@ function botHpLose(socket){
     }
     socket.emit("botHpStatus",player.botHp)
 
-    // ws.clients.forEach(client => {
-    //             if (client.readyState === 1) {
-    //                 client.send(JSON.stringify({
-    //                     type: "botHpStatus",
-    //                     value: botHp
-    //                 }));
-    //             }
-    //         })
     if(player.botHp <= 0){
         player.botHp = 0
         setTimeout(() => {
@@ -277,44 +265,20 @@ function endRoundTimer(socket){
     player.intervalTimerEndRound = setInterval(() => {
         defaultTimer-=1
         socket.emit("EndTimerUpdate", defaultTimer)
-        // ws.clients.forEach(client => {
-        //     if (client.readyState === 1) {
-        //         client.send(JSON.stringify({
-        //             type: "EndTimerUpdate",
-        //             value: defaultTimer
-        //         }))
-        //     }
-        // })
 
         if (defaultTimer <= 0){
             timerRun = false
             clearInterval(player.intervalTimerEndRound)
             socket.emit("EndTimerClose")
-            // ws.clients.forEach(client => {
-            //     if (client.readyState === 1) {
-            //         client.send(JSON.stringify({
-            //             type: "EndTimerClose",
-            //         }))
-            //     }
-            // })
 
             startRoundTimer(socket)
-            // textSkills()
+            textSkills(socket)
             
             
         }
     }, "1000")
 
     socket.emit("roundScreenState",player.roundCount,player.botChoose)
-    // ws.clients.forEach(client => {
-    //     if (client.readyState === 1) {
-    //         client.send(JSON.stringify({
-    //             type: "roundScreenState",
-    //             value: roundCount,
-    //             value2: botChooseGesture1
-    //         }));
-    //     }
-    // })
 }
 
 function lose(socket){
@@ -323,13 +287,6 @@ function lose(socket){
 
     clearInterval(player.timerInterval)
     socket.emit("loseGame")
-    // ws.clients.forEach(client => {
-    //                 if (client.readyState === 1) {
-    //                     client.send(JSON.stringify({
-    //                         type: "loseGame",
-    //                     }));
-    //                 }
-    //                 })
 }
 
 function win(socket){
@@ -338,13 +295,6 @@ function win(socket){
 
     clearInterval(player.timerInterval)
     socket.emit("winGame")
-    // ws.clients.forEach(client => {
-    //                 if (client.readyState === 1) {
-    //                     client.send(JSON.stringify({
-    //                         type: "winGame",
-    //                     }));
-    //                     }
-    //                     })
 }
 
 
