@@ -242,3 +242,14 @@ button:hover {
     text-align: center;
     top: 10px;
 }
+
+#multiplayer-screen{
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 500px;
+    border: 1px red solid;
+    background-color: white;
+}

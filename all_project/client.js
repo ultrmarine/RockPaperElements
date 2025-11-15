@@ -144,6 +144,20 @@ let divFirstSkill = document.getElementById("div-first-skill")
 const allSkillsBtn = document.querySelectorAll("#AllSkill-btn")
 const skillsBtn = document.querySelectorAll(".first-skills-btn")
 
+const multiplayerBtn = document.getElementById("multiplayer-btn")
+const multiplayerScreen = document.getElementById("multiplayer-screen")
+const closeMultiplayerScreen = document.getElementById("close-multiplayer-screen")
+
+multiplayerBtn.addEventListener("click", () => {
+    startScreen.style.display = 'none'
+    multiplayerScreen.style.display = "flex"
+})
+
+closeMultiplayerScreen.addEventListener("click", () => {
+    multiplayerScreen.style.display = "none"
+    startScreen.style.display = 'flex'
+})
+
 startBtn.addEventListener('click', () => {
     startScreen.style.display = 'none'
     preGameScreen.style.display = 'flex'
