@@ -1,6 +1,6 @@
-module.exports = function(ws) { 
+module.exports = function(io) { 
 
-    const botGame = ws.of("/bot")
+    const botGame = io.of("/bot")
 
     const players = new Map()
 
@@ -231,7 +231,7 @@ module.exports = function(ws) {
             socket.emit("EndTimerUpdate", defaultTimer)
 
             if (defaultTimer <= 0){
-                timerRun = false
+                player.timerRun = false
                 clearInterval(player.intervalTimerEndRound)
                 socket.emit("EndTimerClose")
 
@@ -280,6 +280,8 @@ module.exports = function(ws) {
             avatar = ["assets/avatars/wizard1.png","assets/avatars/wizard2.png","assets/avatars/wizard3.png"]
         } else if(player.avatar == "elemental"){
             avatar = ["assets/avatars/elemental1.png","assets/avatars/elemental2.png","assets/avatars/elemental3.png"]
+        } else if(player.avatar == "skeleton"){
+            avatar = ["assets/avatars/skeleton1.jpg","assets/avatars/skeleton2.jpg","assets/avatars/skeleton3.jpg"]
         }
 
         const testHp = {

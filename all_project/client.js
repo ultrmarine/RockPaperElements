@@ -95,6 +95,7 @@
     })
 
     socket.on("loseGame", () =>{
+        loseWinText.innerHTML = "Ты проиграл"
         loseWinScreen.style.display = "flex"
     })
 
@@ -170,20 +171,25 @@ closePreGameScreen.addEventListener('click', () => {
 playBtn.addEventListener('click', () => {
     if (nickInp.value == ""){
         nickInp.value = "Default user"
-    } else{
-        if (selectImg.value == "wizard"){
-            avatarImg.src = "assets/avatars/wizard1.png"
-            funct.setAvatar("wizard")
-        }
-        if (selectImg.value == "elemental"){
-            avatarImg.src = "assets/avatars/elemental1.png"
-            funct.setAvatar("elemental")
-        }
-        funct.startTimer()
-        textNickname.innerHTML = nickInp.value
-        gameScreen.style.display = 'flex'
-        preGameScreen.style.display = 'none'
+        return
     }
+    if (selectImg.value == "wizard"){
+        avatarImg.src = "assets/avatars/wizard1.png"
+        funct.setAvatar("wizard")
+    }
+    if (selectImg.value == "elemental"){
+        avatarImg.src = "assets/avatars/elemental1.png"
+        funct.setAvatar("elemental")
+    }
+    if (selectImg.value == "skeleton"){
+        selectImg.src = "assets/avatars/skeleton1.png"
+        funct.setAvatar("skeleton")
+    }
+    funct.startTimer()
+    textNickname.innerHTML = nickInp.value
+    gameScreen.style.display = 'flex'
+    preGameScreen.style.display = 'none'
+    
 })
 
 function calcHpAvatar(data,data2,data3,data4){
