@@ -1,11 +1,11 @@
 (function () {
-    const socket = io()
+    const socket = io("/bot")
 
     function emit(type, value){
         socket.emit(type, value)
     }
 
-    out_test = {
+    funct = {
         chooseGesture: (gesture) => emit("chooseGesture", gesture),
         firstSkill: (skill) => emit("firstSkill", skill),
         skills: (skill) => emit("skills", skill),
@@ -46,7 +46,6 @@
     })
 
     socket.on("testHp", (hp1,hp2,hp3,avatar) =>{
-        console.log(hp1, hp2, hp3, avatar)
         calcHpAvatar(hp1, hp2, hp3, avatar)
     })
 
@@ -123,13 +122,13 @@ const textRoundScreen = document.getElementById("text-round-screen")
 const loseWinScreen = document.getElementById("lose-win-screen")
 const loseWinText = document.getElementById("lose-win-text")
 const avatarImg = document.getElementById("avatar-img")
-let selectImg = document.getElementById("avatar-select")
+const selectImg = document.getElementById("avatar-select")
 const playAgainBtn = document.getElementById("play-again-btn")
 const textAppliedSkill = document.getElementById("text-applied-skill")
 const textRoundTotal = document.getElementById("text-round-total")
-let textRoundCount = document.getElementById("text-round-count")
+const textRoundCount = document.getElementById("text-round-count")
 const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
-let textEnemyMove = document.getElementById("text-enemy-move")
+const textEnemyMove = document.getElementById("text-enemy-move")
 const divManaCount = document.getElementById("div-mana-count")
 const textManaCount = document.getElementById("text-mana-count")
 const textBotSkill = document.getElementById("text-bot-skill")
@@ -138,9 +137,9 @@ const secondHp = document.getElementById("second-hp")
 const thirdHp = document.getElementById("third-hp")
 const BotHpText = document.getElementById("bot-hp")
 const gestureAllButtons = document.querySelectorAll("[data-gesture]")
-let textPlayerChoice = document.getElementById("text-player-choice")
+const textPlayerChoice = document.getElementById("text-player-choice")
 const firstSkillBtn = document.getElementById("first-skill-btn")
-let divFirstSkill = document.getElementById("div-first-skill")
+const divFirstSkill = document.getElementById("div-first-skill")
 const allSkillsBtn = document.querySelectorAll("#AllSkill-btn")
 const skillsBtn = document.querySelectorAll(".first-skills-btn")
 
@@ -174,13 +173,13 @@ playBtn.addEventListener('click', () => {
     } else{
         if (selectImg.value == "wizard"){
             avatarImg.src = "assets/avatars/wizard1.png"
-            out_test.setAvatar("wizard")
+            funct.setAvatar("wizard")
         }
         if (selectImg.value == "elemental"){
             avatarImg.src = "assets/avatars/elemental1.png"
-            out_test.setAvatar("elemental")
+            funct.setAvatar("elemental")
         }
-        out_test.startTimer()
+        funct.startTimer()
         textNickname.innerHTML = nickInp.value
         gameScreen.style.display = 'flex'
         preGameScreen.style.display = 'none'
@@ -198,15 +197,14 @@ let playerGestureChoice = "-"
 gestureAllButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
         playerGestureChoice = btn.dataset.gesture
-        out_test.chooseGesture(playerGestureChoice)
+        funct.chooseGesture(playerGestureChoice)
         textPlayerChoice.innerHTML = "Твой выбор: " + playerGestureChoice
     })
 })
 
 confirmBtn.addEventListener("click", ()=>{
-    console.log(playerGestureChoice)
     if (playerGestureChoice != "-"){
-        out_test.confirm()
+        funct.confirm()
     } else{
         alert("Для подтверждения нужно выбрать жест")
     }
@@ -264,23 +262,23 @@ firstSkillBtn.addEventListener("click", () => {
 
 skillsBtn.forEach(button =>{
     button.addEventListener("click", () => {
-        out_test.firstSkill(button.dataset.firstskill)
+        funct.firstSkill(button.dataset.firstskill)
     })
 })
 
 allSkillsBtn.forEach(button =>{
     button.addEventListener("click", () => {
         if (button.dataset.allskill != "trap"){
-            out_test.skills(button.dataset.allskill)
+            funct.skills(button.dataset.allskill)
         } else if (button.dataset.allskill === "trap"){
             let confirmBtn = confirm(`Вы точно хотите поставить ловушку на ${playerGestureChoice}?`)
             if (confirmBtn){
-                out_test.trapChoice(playerGestureChoice)
+                funct.trapChoice(playerGestureChoice)
             }
         }
     })
 })
 
 playAgainBtn.addEventListener("click", () =>{
-    out_test.playAgain()
+    funct.playAgain()
 })

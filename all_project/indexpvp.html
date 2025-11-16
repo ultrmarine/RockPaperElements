@@ -3,48 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Elements</title>
-    <link rel="stylesheet" href="style.css">
+    <title>PVP ROOM - Rock Paper Elements</title>
+    <link rel="stylesheet" href="stylepvp.css">
     <script src="/socket.io/socket.io.js"></script>
-    <script defer src="client.js"></script>
+    <script defer src="clientpvp.js"></script>
 </head>
 <body>
-
-
-<!-- стартовое -->
-    <div id="start-screen">
-        <h1 class="title-name">Rock Paper Elements</h1>
-        <button id="start-btn">Start</button>
-        <button id="multiplayer-btn">Multiplayer</button>
-        <button>TESTEST2</button>
-    </div>
-
-    <!-- мультиплеер -->
-    <div id="multiplayer-screen" style="display: none;" >
-        <a href="indexpvp.html"><button id="search-multiplayer-btn">Search</button></a>
-        <button id="close-multiplayer-screen">BACK</button>
-    </div>
     
-
-    <div id="pre-game-screen" style="display: none;" >
-        <button id="play-btn">PLAY</button>
-        <button id="close-pre-game-screen">BACK</button>
-        <input id="nick-input" type="text">
-        <select name="avatarSelect" id="avatar-select">
+    <button id="mult-search-btn">SEARCH</button>
+    <input id="nick-input" type="text" placeholder="Your nickname">
+    <select name="avatarSelect" id="avatar-select">
+            <option selected disabled>выбери аву</option>
             <option value="skeleton">Скелет</option>
             <option value="wizard">Волшебник</option>
             <option value="elemental">Элементаль</option>
         </select>
-    </div>
 
 
-
-<!-- Игровое окошечко -->
-    <div id="game-screen" style="display: none;">
+    <div id="game-pvp-screen" style="display: none;">
         <!-- Див под аватарки -->
         <div class="div-avatar">
             <img id="avatar-img" src="assets\avatars\skeleton1.jpg">
-
         </div>
         <!-- див с картинками хп -->
         <div class="div-hp">
@@ -53,8 +32,8 @@
             <img class="img-hp" id="first-hp" src="assets\icons\red-hp.png">
         </div>
 
-        <div class="div-bot-hp">
-            <h1 id="bot-hp">BOT HP 6</h1>
+        <div class="div-enemy-hp">
+            <h1 id="enemy-hp">ENEMY HP 6</h1>
         </div>
         <!-- див который показывает раунд -->
         <div class="div-round">
@@ -136,8 +115,5 @@
         </div>
 
     </div>
-<!-- <script src="js\script.js"></script>
-<script src="js\manaSkills.js"></script>
-<script src="js\bot.js"></script> -->
 </body>
 </html>
