@@ -21,7 +21,11 @@
         chooseGesture: (gesture) => emit("chooseGesture", {roomId,gesture}), // тут юзаем {} так как js гавно работающие по правилу запятой и если так не сделать,то отправит только крайнию правую переменную,короче калл непонятный ну просто сука ненавижу 20 минут на это потратил мрази
         searchRoom: () => emit("searchRoom"),
         setAvatar: (avatar) => avatar1 = avatar,
-        confirm: () => emit("confirmBtn", roomId)
+        playAgain: () => emit("playAgain", roomId),
+        confirm: () => emit("confirmBtn", roomId),
+        firstSkill: (skill) => emit("firstSkill", {roomId,skill}),
+        skills: (skill) => emit("skills", {roomId,skill}),
+        trapChoice: (trap) => emit("trapChoice", {roomId,trap}),
     }
 
     socket.on("timerUpdate", (time) =>{
@@ -40,13 +44,17 @@
         textRoundTotal.innerHTML = data
     })
 
-    socket.on("roundScreenState", (roundCount, botChoose) =>{
+    socket.on("roundStatusInvincible", (data) => {
+        textRoundTotal.innerHTML += data
+    })
+
+    socket.on("roundScreenState", (roundCount, enemyChoose) =>{
         if (roundScreen.style.display == "none"){
             roundScreen.style.display = 'flex'
         }
         textRoundCount.innerHTML = roundCount
         textRoundScreen.innerHTML = "Конец " + (roundCount-1) + " раунда"
-        textEnemyMove.innerHTML = "Противник сыграл " + botChoose
+        textEnemyMove.innerHTML = "Противник сыграл " + enemyChoose
         gamePvpScreen.style.pointerEvents = "none"  
     })
 
@@ -91,7 +99,28 @@
         gamePvpScreen.style.pointerEvents = "none"
     })
 
+    socket.on("RestartGame", () =>{
+        window.location.href = "index.html"
+    })
+
+    socket.on("TextSkill", (skill)=>{
+        console.log("TextSkill", skill)
+        textSkills(skill)
+    })
+
+    socket.on("enemyTextSkill", (enemySkill) =>{
+        textEnemySkill.innerHTML = enemySkill
+    })
+
 })()
+
+const firstSkillBtn = document.getElementById("first-skill-btn")
+const divFirstSkill = document.getElementById("div-first-skill")
+const textAppliedSkill = document.getElementById("text-applied-skill")
+const textEnemySkill = document.getElementById("text-bot-skill")
+
+const allSkillsBtn = document.querySelectorAll("#AllSkill-btn")
+const skillsBtn = document.querySelectorAll(".first-skills-btn")
 
 const roundScreen = document.getElementById("round-screen")
 const textRoundCount = document.getElementById("text-round-count")
@@ -125,6 +154,8 @@ const divManaCount = document.getElementById("div-mana-count")
 const loseWinScreen = document.getElementById("lose-win-screen")
 const loseWinText = document.getElementById("lose-win-text")
 
+const playAgainBtn = document.getElementById("play-again-btn")
+
 multSearchBtn.addEventListener("click", () => {
     if (nickInp.value == ""){
         nickInp.value = "Default user"
@@ -147,6 +178,74 @@ multSearchBtn.addEventListener("click", () => {
     multSearchBtn.style.pointerEvents = "none"
     
 })
+
+firstSkillBtn.addEventListener("click", () => {
+    if (divFirstSkill.style.display != "flex") {
+        divFirstSkill.style.display = "flex"
+    } else{
+        divFirstSkill.style.display = "none"
+    }
+})
+
+skillsBtn.forEach(button =>{
+    button.addEventListener("click", () => {
+        funct.firstSkill(button.dataset.firstskill)
+    })
+})
+
+allSkillsBtn.forEach(button =>{
+    button.addEventListener("click", () => {
+        if (button.dataset.allskill != "trap"){
+            funct.skills(button.dataset.allskill)
+        } else if (button.dataset.allskill === "trap"){
+            let confirmBtn = confirm(`Вы точно хотите поставить ловушку на ${playerGestureChoice}?`)
+            if (confirmBtn){
+                funct.trapChoice(playerGestureChoice)
+            }
+        }
+    })
+})
+
+function textSkills(skill){
+    const pickSkill = skill
+    let top = "0px"
+    let fontSize = "25px"
+
+    if (pickSkill == 0) {
+        text = "No skills applied"
+        top = "0px"
+        fontSize = "40px"
+    } else if (pickSkill >= 1 && pickSkill <= 4) {
+        // та же самая тема,что и в питоне,только нужны эти ублюдские скобки который я не знаю как ставить на английской клаве
+        text = `На следующий раунд заблокирована ${pickSkill} группа жестов`
+    } else if (pickSkill == 5) {
+        text = "На этот раунд ваш урон и проходящий по вам урон увеличен на 1 "
+        top = "-20px"
+        fontSize = "30px"
+    } else if (pickSkill == 6) {
+        pickSkill = 0
+        top = "0px"
+        fontSize = "40px"
+        text = "Вы похилились на 1 хп!"
+        setTimeout(() => {
+            textSkills(0)
+        }, "3000");
+    } else if (pickSkill == 7) {
+        text = "Вы отключили равные жесты противнику"
+    } else if (pickSkill == 8) {
+        top = "-20px"
+        fontSize = "40px"
+        text = `Вы поставили ловушку на жест ${playerGestureChoice}`
+    } else if (pickSkill == 9) {
+        top = "-35px"
+        fontSize = "45px"
+        text = `У вас полная неуязвимость :)`
+    }
+
+    textAppliedSkill.innerHTML = text
+    textAppliedSkill.style.top = top
+    textAppliedSkill.style.fontSize = fontSize
+}
 
 
 let playerGestureChoice = "-"
@@ -172,4 +271,8 @@ confirmBtn.addEventListener("click", ()=>{
     } else{
         alert("Для подтверждения нужно выбрать жест")
     }
+})
+
+playAgainBtn.addEventListener("click", () =>{
+    funct.playAgain()
 })

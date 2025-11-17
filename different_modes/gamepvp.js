@@ -81,16 +81,41 @@ module.exports = function(io) {
             const p1 = room.player[0]
             const p2 = room.player[1]
 
-            console.log(room.gesture[p1], " ",room.gesture[p2] )
+            console.log(room.gesture[p1], " - ",room.gesture[p2] )
 
             if (room.confirmBtn[p1] == true && room.confirmBtn[p2] == true){
                 roundEnd(socket, roomId)
             }
         })
 
+        socket.on("playAgain", roomId =>{
+            const room = rooms[roomId] // проверка на руму
+            if (!room.gameEnd) return
+            if (!room) return
 
+            const p1 = room.player[0]
+            const p2 = room.player[1]
 
+            if (room.hp[p1] || room.hp[p2]){
+                playAgain(socket,roomId)
+            }
+        })
 
+        socket.on("firstSkill", ({roomId,skill}) =>{
+            const room = rooms[roomId] // проверка на руму
+            if (room.gameEnd) return
+            if (!room) return
+
+            firstSkills(socket,roomId, skill)
+        })
+
+        socket.on("skills", ({roomId,skill}) =>{
+            const room = rooms[roomId] // проверка на руму
+            if (room.gameEnd) return
+            if (!room) return
+
+            allSkills(socket,roomId,skill)
+        })
     })
 
     const gesture_wins = {
@@ -186,11 +211,11 @@ module.exports = function(io) {
     function lose(roomId,player){
         const room = rooms[roomId]
         if (!room) return
+        room.gameEnd = true
 
         const playerSocket = pvpGame.sockets.get(player)
 
         clearInterval(room.timerInterval)
-        room.gameEnd = true
         playerSocket.emit("loseGame")
         win(roomId,player)
     }
@@ -203,15 +228,14 @@ module.exports = function(io) {
         const p1 = room.player[0]
         const p2 = room.player[1]
 
-        let playerSocket = pvpGame.sockets.get(player)
+        let playerSocket
 
         if(player == p1){
             playerSocket = pvpGame.sockets.get(p2)
+        } else if(player == p2){
+            playerSocket = pvpGame.sockets.get(p1)
         }
-
-
         clearInterval(player.timerInterval)
-        room.gameEnd = true
         playerSocket.emit("winGame")
     }
 
@@ -231,42 +255,92 @@ module.exports = function(io) {
             clearInterval(room.timerInterval)
             room.timerRun = false
             roundMana(roomId)
-
+            enemySkill(roomId,p1)
+            enemySkill(roomId,p2)
+            playerSocket1.emit("EnemyHp", room.hp[p2])
+            playerSocket2.emit("EnemyHp", room.hp[p1])
             if (room.gesture[p1] == room.gesture[p2]){
                 playerSocket1.emit("roundStatus", "У вас ничья")
                 playerSocket2.emit("roundStatus", "У вас ничья")
-
-                // player.selectSkill = 0
-            } else if(gesture_wins[room.gesture[p1]].includes(room.gesture[p2]) && gesture_wins[room.gesture[p2]].includes(room.gesture[p1])){ //ravnie по силе жесты проверка
-                //доработать
-                playerSocket1.emit("roundStatus","Сыграны равные по силе жесты вы оба теряете hp")
-                playerSocket2.emit("roundStatus","Сыграны равные по силе жесты вы оба теряете hp")
-                playerHpLose(socket,roomId,p1)
-                playerHpLose(socket,roomId,p2)
-                
-                // player.selectSkill = 0
+                // равыне по силе жесты проверка
+            } else if(gesture_wins[room.gesture[p1]].includes(room.gesture[p2]) && gesture_wins[room.gesture[p2]].includes(room.gesture[p1])){
+                //вынести в отдельную функцию!!!!
+                if (room.skill[p1] == 7){
+                    playerSocket1.emit("roundStatus","Равный жест не сработал.Ты выйграл")
+                    playerSocket2.emit("roundStatus","Равный жест не сработал.Ты проиграл")
+                    playerHpLose(roomId,p2)
+                } else if(room.skill[p2] == 7){
+                    playerSocket1.emit("roundStatus","Равный жест не сработал.Ты проиграл")
+                    playerSocket2.emit("roundStatus","Равный жест не сработал.Ты выйграл")
+                    playerHpLose(roomId,p1)
+                } else{
+                    playerSocket1.emit("roundStatus","Сыграны равные по силе жесты вы оба теряете hp")
+                    playerSocket2.emit("roundStatus","Сыграны равные по силе жесты вы оба теряете hp")
+                    playerHpLose(roomId,p1)
+                    playerHpLose(roomId,p2)
+                }
             } else if (gesture_wins[room.gesture[p1]].includes(room.gesture[p2])){
                 playerSocket1.emit("roundStatus","Ты выйграл")
                 playerSocket2.emit("roundStatus","Ты проиграл вамп вамп")
-                playerHpLose(socket,roomId,p2)
-                
+                playerHpLose(roomId,p2)
 
-                // if(player.selectSkill == 7 && gesture_wins[player.gesture].includes(playerGestureChoice)){
-                //     socket.emit("roundStatus","Равный жест не сработал.Ты выйграл")
-                // }
-                
-                // player.selectSkill = 0
             } else{
                 playerSocket1.emit("roundStatus","Ты проиграл вамп вамп")
-                playerHpLose(socket,roomId,p1)
+                playerHpLose(roomId,p1)
                 playerSocket2.emit("roundStatus","Ты выйграл")
 
-                // player.selectSkill = 0
             }
+            skillZero(roomId)
+            textSkills(roomId)
             endRoundTimer(socket,roomId)
         } else{
             //потом заменить алёрт на pop окно по желанию конечно
         }
+    }
+
+    function enemySkill(roomId,player){
+        const room = rooms[roomId]
+        if (room.gameEnd) return
+        if (!room) return
+
+        let p1 = room.player[0]
+        let p2 = room.player[1]
+
+        if(player == p1){
+            p1 = room.player[1]
+            p2 = room.player[0]
+        }
+
+        const playerSocket = pvpGame.sockets.get(p2)// образаюсь к клиентам нппрямую по сокету 
+
+        //как же меня иф елсе бесят,ну чё та тут нигде свитч кейсы не поюзать нормально
+        if(room.skill[p1] >= 1 && room.skill[p1] <= 4){
+            playerSocket.emit("enemyTextSkill", "Противник заблокировал вам одну из 4 групп")
+        } else if(room.skill[p1] == 5){
+            playerSocket.emit("enemyTextSkill", "Противник увеличил урон!")
+        } else if(room.skill[p1] == 6){
+            playerSocket.emit("enemyTextSkill", "Противник похилился")
+        } else if(room.skill[p1] == 7){
+            playerSocket.emit("enemyTextSkill", "Отключил вам равные жесты")
+        } else if(room.skill[p1] == 8){
+            playerSocket.emit("enemyTextSkill", "Противник поставил ловушку")
+        } else if(room.skill[p1] == 9){
+            playerSocket.emit("enemyTextSkill", "Противник был неуязвимым этот ход")
+        } else{
+            playerSocket.emit("enemyTextSkill", "Противник пропустил этот ход")
+        }
+    }
+
+    function skillZero(roomId){
+        const room = rooms[roomId]
+        if (room.gameEnd) return
+        if (!room) return
+
+        let p1 = room.player[0]
+        let p2 = room.player[1]
+
+        room.skill[p1] = 0
+        room.skill[p2] = 0
     }
 
     function endRoundTimer(socket, roomId){
@@ -295,10 +369,7 @@ module.exports = function(io) {
                 clearInterval(room.intervalTimerEndRound)
                 pvpGame.to(roomId).emit("EndTimerClose")
                 startRoundTimer(socket,roomId)
-
-                // textSkills(socket)
-                
-                
+                textSkills(roomId)
             }
         }, "1000")
 
@@ -307,7 +378,7 @@ module.exports = function(io) {
         
     }
 
-    function playerHpLose(socket,roomId,player){
+    function playerHpLose(roomId,player){
         const room = rooms[roomId]
         if (room.gameEnd) return
         if (!room) return
@@ -318,25 +389,22 @@ module.exports = function(io) {
         const playerSocket1 = pvpGame.sockets.get(p1) // образаюсь к клиентам нппрямую по сокету 
         const playerSocket2 = pvpGame.sockets.get(p2)
 
-        // if (player.selectSkill == 9){
-        //     // textRoundTotal.innerHTML += ", но невиданный щит спас вас от урона :)"
-        // } else if(player.selectSkill == 5 && player.botCast == 2){
-        //     player.hp -= 3
-        // } else if (player.selectSkill == 5 || player.botCast == 2){
-        //     player.hp -= 2
-        // } else{
-        //     player.hp -= 1
-        // }
-
-        room.hp[player] -= 1
+        if (room.skill[player] == 9){
+            let sock = pvpGame.sockets.get(player)
+            sock.emit("roundStatusInvincible", ",но невиданный щит спас вас от урона :)")
+        } else if(room.skill[p1] == 5 && room.skill[p2] == 5){
+            room.hp[player] -= 3
+        } else if (room.skill[p1] == 5 || room.skill[p2] == 5){
+            room.hp[player] -= 2
+        } else{
+            room.hp[player] -= 1
+        }
 
         if(p1 == player){
             playerSocket2.emit("EnemyHp", room.hp[player])
         } else{
             playerSocket1.emit("EnemyHp", room.hp[player])
         }
-
-
         calcHpAvatarServ(roomId, player)
     }
 
@@ -377,6 +445,88 @@ module.exports = function(io) {
         if (room.mana[p2] >= 10){
             room.mana[p2] = 10
         }
+    }
+
+    function playAgain(socket,roomId) {
+        const room = rooms[roomId]
+        if (!room.gameEnd) return
+        if (!room) return
+
+        socket.emit("RestartGame")
+    }
+
+    function firstSkills(socket,roomId,skill){
+        const room = rooms[roomId]
+        if (room.gameEnd) return
+        if (!room) return
+
+        let player = socket.id
+
+        console.log(room.skill[player])
+
+        if (skill == "first" && room.mana[player] >= 4){
+            room.mana[player] -= 4
+            room.skill[player] = 1
+        } else if (skill == "second" && room.mana[player] >= 4){
+            room.mana[player] -= 4
+            room.skill[player] = 2
+        } else if (skill == "third" && room.mana[player] >= 4){
+            room.mana[player] -= 4
+            room.skill[player] = 3
+        } else if (skill == "fourth" && room.mana[player] >= 4){
+            room.mana[player] -= 4
+            room.skill[player] = 4
+        }
+        calcMana(roomId)
+        textSkills(roomId)
+    }
+
+    function allSkills(socket,roomId,skill){
+        const room = rooms[roomId]
+        if (room.gameEnd) return
+        if (!room) return
+
+        let player = socket.id
+
+        if (skill == "damage" && room.mana[player] >= 3 && room.skill[player] == 0){ // damage uvel
+            room.mana[player]-= 3
+            room.skill[player] = 5
+        } else if(skill == "heal" && room.mana[player] >= 5 && room.skill[player] == 0){ // pohill 
+            room.mana[player]-= 5
+            room.skill[player] = 6
+            room.hp[player] += 1
+        } else if(skill == "equalGesture" && room.mana[player] >= 2 && room.skill[player] == 0){ // ravnie gestures otkl
+            room.mana[player]-= 2
+            room.skill[player] = 7
+        } else if(skill == "trap" && room.mana[player] >= 4 && room.skill[player] == 0){ // trap
+            room.mana[player]-= 4
+            room.skill[player] = 8
+        } else if(skill == "invincible" && room.mana[player] >= 8 && room.skill[player] == 0){ // neujazvimost
+            room.mana[player] -= 8
+            room.skill[player] = 9
+        } else if (player.selectSkill != 0) {
+            socket.emit("selectSkillMsg")
+        }
+
+        calcMana(roomId)
+        textSkills(roomId)
+        calcHpAvatarServ(roomId,player)
+    }
+
+    function textSkills(roomId){
+        const room = rooms[roomId]
+        if (room.gameEnd) return
+        if (!room) return
+
+        const p1 = room.player[0]
+        const p2 = room.player[1]
+
+        const playerSocket1 = pvpGame.sockets.get(p1) // образаюсь к клиентам нппрямую по сокету 
+        const playerSocket2 = pvpGame.sockets.get(p2)
+
+
+        playerSocket1.emit("TextSkill", room.skill[p1])
+        playerSocket2.emit("TextSkill", room.skill[p2])
     }
 
 }
