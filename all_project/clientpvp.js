@@ -99,6 +99,18 @@
         gamePvpScreen.style.pointerEvents = "none"
     })
 
+    socket.on("enemyLeave", () =>{
+        loseWinText.innerHTML = "Противник с позором ливнул,мы вернём вас в главное меню"
+        loseWinScreen.style.display = "flex"
+        gamePvpScreen.style.pointerEvents = "none"
+        loseWinScreen.style.pointerEvents = "none"
+        playAgainBtn.style.display = "none"
+        const timer = setInterval(() => {
+            window.location.href = "index.html"
+            clearInterval(timer)
+        },5000)
+    })
+
     socket.on("RestartGame", () =>{
         window.location.href = "index.html"
     })

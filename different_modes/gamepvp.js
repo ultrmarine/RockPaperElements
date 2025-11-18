@@ -8,17 +8,36 @@ module.exports = function(io) {
     const wait = []
     const rooms = {}
 
+    const activePlayer = []
+
     pvpGame.on("connection", socket => {
         console.log("PvP player connected:", socket.id)
 
 
         socket.on("disconnect", () =>{
-            console.log("DEL:",socket.id)
+            console.log("PvP player left:",socket.id)
+        })
+
+        socket.on("disconnecting", () => {
+            const roomId = [...socket.rooms][1] // ... эт оператор который типа расширяет поиск по элементу,ну или как здесь по массиву,объяснить очень сложно,вбей в гугле spread operator
+            if(roomId == undefined) return
+            socket.leave(roomId)
+            pvpGame.to(roomId).emit("enemyLeave")
+
+            if (rooms[roomId].enemyLeave == true){ // проверка на лив из румы,без неё,когда выйдет второй юзер будет ошибка
+                console.log("Del room: ", rooms[roomId])
+                delete rooms[roomId]
+                return
+            }
+            rooms[roomId].enemyLeave = true
+            rooms[roomId].gameEnd = true
         })
 
         socket.on("searchRoom", () =>{
             if (wait.includes(socket)) return // проверка на нахождении в списке ждунов
+            if(activePlayer.includes(socket)) return // проверка на то,что пытается ли юзер нагло запуститься в ещё одну руму
             wait.push(socket)
+            activePlayer.push(socket)
 
             if (wait.length >= 2){
                 //вытаскивает из списка ждунов тока первого чела и удаляет его из списка
@@ -34,7 +53,7 @@ module.exports = function(io) {
                 rooms[roomId] = {
                     player: [p1.id, p2.id],
                     hp: { [p1.id]: 6, [p2.id]: 6 },
-                    avatar: { [p1.id]: "skeleton", [p2.id]: "skeleton"},
+                    avatar: { [p1.id]: undefined, [p2.id]: undefined},
                     confirmBtn: {[p1.id]: false, [p2.id]: false},
                     timerInterval: null,
                     timerRun: false,
@@ -43,29 +62,35 @@ module.exports = function(io) {
                     roundCount: 1,
                     mana: {[p1.id]: 2, [p2.id]: 2},
                     skill: {[p1.id]: 0, [p2.id]: 0},
-                    gameEnd: false
+                    gameEnd: false,
+                    enemyLeave: false
                 }
             
                 pvpGame.to(roomId).emit("findGame", roomId)
-                startRoundTimer(socket,roomId) // стартуем таймер здесь,так как пользователя 2 и нельзя чтоб таймер удваилвася 
+                startRoundTimer(socket,roomId) // стартуем таймер здесь,так как пользователя 2 и нельзя чтоб таймер удваилвася
             }
         })
 
         socket.on("chooseGesture", ({roomId, gesture}) =>{
             const room = rooms[roomId] // проверка на руму
-            if (room.gameEnd) return
             if (!room) return
-            if(!gesture_wins[gesture]) return
+            if (room.gameEnd) return
+            if(gesture_wins[gesture] == undefined) return
 
             room.gesture[socket.id] = gesture // по айдишнику ищем нужного игрока и выдаём ему его выбранный жест
         })
 
         socket.on("AvatarImg", ({roomId,avatar}) =>{
             const room = rooms[roomId] // проверка на руму
-            if (room.gameEnd) return
             if (!room) return
+            if (room.gameEnd) return
+            const p1 = room.player[0]
+            const p2 = room.player[1]
+            if (room.avatar[p1] != undefined && room.avatar[p2] != undefined){
+                return
+            }
 
-            rooms[roomId].avatar[socket.id] = avatar
+            room.avatar[socket.id] = avatar
             let player = socket.id
             calcHpAvatarServ(roomId, player)
         })
@@ -73,15 +98,15 @@ module.exports = function(io) {
 
         socket.on("confirmBtn", roomId =>{
             const room = rooms[roomId] // проверка на руму
-            if (room.gameEnd) return
             if (!room) return
+            if (room.gameEnd) return
             if(room.confirmBtn[socket.id]) return
 
             room.confirmBtn[socket.id] = true
             const p1 = room.player[0]
             const p2 = room.player[1]
 
-            console.log(room.gesture[p1], " - ",room.gesture[p2] )
+            // console.log(room.gesture[p1], " - ",room.gesture[p2] )
 
             if (room.confirmBtn[p1] == true && room.confirmBtn[p2] == true){
                 roundEnd(socket, roomId)
@@ -90,13 +115,14 @@ module.exports = function(io) {
 
         socket.on("playAgain", roomId =>{
             const room = rooms[roomId] // проверка на руму
-            if (!room.gameEnd) return
             if (!room) return
+            if (!room.gameEnd) return
 
             const p1 = room.player[0]
             const p2 = room.player[1]
 
-            if (room.hp[p1] || room.hp[p2]){
+
+            if (room.hp[p1] || room.hp[p2] || socket.rooms.size == 1){
                 playAgain(socket,roomId)
             }
         })
@@ -139,8 +165,8 @@ module.exports = function(io) {
 
     function startRoundTimer(socket,roomId) {
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
         if (room.timerRun) return
         room.timerRun = true
 
@@ -148,7 +174,7 @@ module.exports = function(io) {
         const p2 = room.player[1]
 
 
-        let defaultTimer = 60
+        let defaultTimer = 10
         room.timerInterval = setInterval(() => {
             defaultTimer--
             pvpGame.to(roomId).emit("timerUpdate", defaultTimer)
@@ -168,8 +194,8 @@ module.exports = function(io) {
 
     function calcHpAvatarServ(roomId,player){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         const playerSocket = pvpGame.sockets.get(player) // образаюсь к клиентам нппрямую по сокету 
         
@@ -241,8 +267,8 @@ module.exports = function(io) {
 
     function roundEnd(socket,roomId){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         let p1 = room.player[0]
         let p2 = room.player[1]
@@ -300,8 +326,8 @@ module.exports = function(io) {
 
     function enemySkill(roomId,player){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         let p1 = room.player[0]
         let p2 = room.player[1]
@@ -333,8 +359,8 @@ module.exports = function(io) {
 
     function skillZero(roomId){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         let p1 = room.player[0]
         let p2 = room.player[1]
@@ -345,8 +371,8 @@ module.exports = function(io) {
 
     function endRoundTimer(socket, roomId){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         const p1 = room.player[0]
         const p2 = room.player[1]
@@ -380,8 +406,8 @@ module.exports = function(io) {
 
     function playerHpLose(roomId,player){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         const p1 = room.player[0]
         const p2 = room.player[1]
@@ -410,8 +436,8 @@ module.exports = function(io) {
 
     function roundMana(roomId){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         const p1 = room.player[0]
         const p2 = room.player[1]
@@ -427,8 +453,8 @@ module.exports = function(io) {
 
     function calcMana(roomId){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         const p1 = room.player[0]
         const p2 = room.player[1]
@@ -449,20 +475,20 @@ module.exports = function(io) {
 
     function playAgain(socket,roomId) {
         const room = rooms[roomId]
-        if (!room.gameEnd) return
         if (!room) return
+        if (!room.gameEnd) return
 
         socket.emit("RestartGame")
     }
 
     function firstSkills(socket,roomId,skill){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         let player = socket.id
 
-        console.log(room.skill[player])
+        // console.log(room.skill[player])
 
         if (skill == "first" && room.mana[player] >= 4){
             room.mana[player] -= 4
@@ -483,8 +509,8 @@ module.exports = function(io) {
 
     function allSkills(socket,roomId,skill){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         let player = socket.id
 
@@ -515,8 +541,8 @@ module.exports = function(io) {
 
     function textSkills(roomId){
         const room = rooms[roomId]
-        if (room.gameEnd) return
         if (!room) return
+        if (room.gameEnd) return
 
         const p1 = room.player[0]
         const p2 = room.player[1]

@@ -17,6 +17,7 @@ module.exports = function(io) {
             botChoose: "-", // jest vibranii botom
             blockGroupBot: "-", // заблоканая группа на раунд для бота
             avatar: "skeleton", // avatarka igroka
+            avatarSet: null,
             selectSkill: 0, // vibranii skill igroka
             skill8PlayerChoice: "-", // jest na kotorii postavlena lovushka
             roundCount: 1, // kol-vo raundov
@@ -39,14 +40,20 @@ module.exports = function(io) {
         socket.on("chooseGesture", (gesture) => {
             const player = players.get(socket.id)
             if (!player) return
+            if(gesture_wins[gesture] == undefined) return
+            
             player.gesture = gesture
         })
         
         socket.on("AvatarImg", (avatar) =>{
             const player = players.get(socket.id)
             if (!player) return
-            player.avatar = avatar
-            calcHpAvatarServ(socket)
+            if (player.avatarSet != null) return
+            if(avatar == "skeleton" || avatar == "wizard" || avatar == "elemental"){
+                player.avatarSet = avatar
+                player.avatar = avatar
+                calcHpAvatarServ(socket)
+            } else return 
         })
 
         socket.on("startTimer", () =>{
@@ -520,6 +527,7 @@ module.exports = function(io) {
         player.mana = 2
         player.botMana = 2
         player.timerRun = false
+        player.avatarSet = null
     }
 
     function playAgain(socket) {
