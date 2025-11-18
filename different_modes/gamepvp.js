@@ -174,7 +174,7 @@ module.exports = function(io) {
         const p2 = room.player[1]
 
 
-        let defaultTimer = 10
+        let defaultTimer = 60
         room.timerInterval = setInterval(() => {
             defaultTimer--
             pvpGame.to(roomId).emit("timerUpdate", defaultTimer)
