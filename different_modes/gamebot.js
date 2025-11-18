@@ -15,6 +15,7 @@ module.exports = function(io) {
             botCast: null, // скилл бота
             gesture: "-", // jest vibranii igrokom
             botChoose: "-", // jest vibranii botom
+            blockGroupBot: "-", // заблоканая группа на раунд для бота
             avatar: "skeleton", // avatarka igroka
             selectSkill: 0, // vibranii skill igroka
             skill8PlayerChoice: "-", // jest na kotorii postavlena lovushka
@@ -100,7 +101,8 @@ module.exports = function(io) {
         player.timerRun = true
 
         let defaultTimer = 60
-        player.botChoose = botChooseGesture()
+        player.botChoose = botChooseGesture(player.blockGroupBot)
+        player.blockGroupBot = null
         player.timerInterval = setInterval(() => {
             defaultTimer--
             socket.emit("timerUpdate", defaultTimer)
@@ -461,15 +463,19 @@ module.exports = function(io) {
         if (skill == "first" && player.mana >= 4){
             player.mana-= 4
             player.selectSkill = 1
+            player.blockGroupBot = "group1"
         } else if (skill == "second" && player.mana >= 4){
             player.mana-= 4
             player.selectSkill = 2
+            player.blockGroupBot = "group2"
         } else if (skill == "third" && player.mana >= 4){
             player.mana-= 4
             player.selectSkill = 3
+            player.blockGroupBot = "group3"
         } else if (skill == "fourth" && player.mana >= 4){
             player.mana-= 4
             player.selectSkill = 4
+            player.blockGroupBot = "group4"
         }
         calcMana(socket)
         textSkills(socket)
