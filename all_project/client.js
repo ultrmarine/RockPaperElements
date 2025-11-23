@@ -288,3 +288,4 @@ allSkillsBtn.forEach(button =>{
 playAgainBtn.addEventListener("click", () =>{
     funct.playAgain()
 })
+
