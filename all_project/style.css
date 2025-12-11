@@ -122,33 +122,82 @@ body {
     border: 5px red solid;
 }
 
-.div-gesture{
-    display:flex;
-    flex-wrap: wrap;
+/* Большой круг под кнопки */
+.div-gesture {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 50px auto;
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1); /* жидкое стекло */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(211, 11, 194, 0.466);
+    box-shadow: 0 0 30px rgba(153, 0, 255, 0.651);
+
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 12px;
-    max-width: 450px;
-    margin:0 auto;
 }
-.gesture-btn{
-    background: none;
-    border:none;
-    padding: 0;
+
+/* Анимка появления из центра выглядит прикольно вроде, почекай нужна она или нет */
+@keyframes appearFromCenter {
+    0% {
+        transform: rotate(var(--angle)) translate(0) rotate(calc(-1 * var(--angle)));
+        opacity: 0;
+    }
+    100% {
+        transform: rotate(var(--angle)) translate(220px) rotate(calc(-1 * var(--angle)));
+        opacity: 1;
+    }
+}
+
+/* кнопки */
+.gesture-btn {
+    position: absolute; 
     width: 55px;
     height: 55px;
     border-radius: 50%;
-    transition: transform 0.25s ease, filter 0.25s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(26, 145, 192, 0.459);
+    box-shadow: 0 4px 15px rgba(32, 59, 117, 0.438);
+ 
+    /* привзываем анимацию */
+    animation: appearFromCenter 0.6s ease-out forwards; 
 }
+
 .gesture-btn img{
     width: 60px;
     height: 60px;
     object-fit: cover;
     display: block;
 }
+
+/* расставляем все 16 кнопочек с анимацией */
+.div-gesture .gesture-btn:nth-child(1)  { --angle: 0deg;     animation-delay: 0s; }
+.div-gesture .gesture-btn:nth-child(2)  { --angle: 22.5deg;  animation-delay: 0.05s; }
+.div-gesture .gesture-btn:nth-child(3)  { --angle: 45deg;    animation-delay: 0.1s; }
+.div-gesture .gesture-btn:nth-child(4)  { --angle: 67.5deg;  animation-delay: 0.15s; }
+.div-gesture .gesture-btn:nth-child(5)  { --angle: 90deg;    animation-delay: 0.2s; }
+.div-gesture .gesture-btn:nth-child(6)  { --angle: 112.5deg; animation-delay: 0.25s; }
+.div-gesture .gesture-btn:nth-child(7)  { --angle: 135deg;   animation-delay: 0.3s; }
+.div-gesture .gesture-btn:nth-child(8)  { --angle: 157.5deg; animation-delay: 0.35s; }
+.div-gesture .gesture-btn:nth-child(9)  { --angle: 180deg;   animation-delay: 0.4s; }
+.div-gesture .gesture-btn:nth-child(10) { --angle: 202.5deg; animation-delay: 0.45s; }
+.div-gesture .gesture-btn:nth-child(11) { --angle: 225deg;   animation-delay: 0.5s; }
+.div-gesture .gesture-btn:nth-child(12) { --angle: 247.5deg; animation-delay: 0.55s; }
+.div-gesture .gesture-btn:nth-child(13) { --angle: 270deg;   animation-delay: 0.6s; }
+.div-gesture .gesture-btn:nth-child(14) { --angle: 292.5deg; animation-delay: 0.65s; }
+.div-gesture .gesture-btn:nth-child(15) { --angle: 315deg;   animation-delay: 0.7s; }
+.div-gesture .gesture-btn:nth-child(16) { --angle: 337.5deg; animation-delay: 0.75s; }
 
 
 .gesture-btn:hover {
@@ -164,18 +213,29 @@ body {
 }
 
 .div-round{
-    position: absolute;
-    background: white;
-    border: red 5px solid;
-    left: 45%;
-    width: 150px;
-    height: 100px;
+  position: relative;
+  left: -5%;
+  color: white;
+  text-align: center;
+  top: -10%;
+  width: 150px;
+  height: 100px;
+  padding: 20px;
+  background: rgba(69, 7, 105, 0.14);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  border: 2px solid rgba(175, 3, 243, 0.45);
+  border-radius: 8px;
+  box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
+  
+  transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  cursor: pointer;
 }
 
-.text-round{
-    position: relative;
-    text-align: center;
-    top: -10px;
+.div-round:hover {
+    background: rgba(255, 255, 255, 0.17);
+    transform: none;
+    filter: brightness(2.1);
 }
 
 #text-round-count{
@@ -237,12 +297,29 @@ body {
 }
 
 .div-timer{
-    position: absolute;
-    background: white;
-    border: red 5px solid;
-    width: 200px;
-    height: 75px;
-    left: 85%;
+  position: relative;
+  left: 25%;
+  color: white;
+  text-align: center;
+  top: 2%;
+  width: 150px;
+  height: 100px;
+  padding: 20px;
+  background: rgba(69, 7, 105, 0.14);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  border: 2px solid rgba(175, 3, 243, 0.45);
+  border-radius: 8px;
+  box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
+  
+  transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  cursor: pointer;
+}
+
+.div-timer:hover {
+    background: rgba(255, 255, 255, 0.17);
+    transform: none;
+    filter: brightness(2.1);
 }
 
 #text-timer{
@@ -321,9 +398,29 @@ body {
 }
 
 .div-bot-hp{
-    position: absolute;
-    left: 70%;
-    background-color: white;
+  position: relative;
+  left: 23%;
+  color: white;
+  text-align: center;
+  top: 10%;
+  width: 150px;
+  height: 100px;
+  padding: 20px;
+  background: rgba(69, 7, 105, 0.14);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  border: 2px solid rgba(175, 3, 243, 0.45);
+  border-radius: 8px;
+  box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
+  
+  transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  cursor: pointer;
+}
+
+.div-bot-hp:hover {
+    background: rgba(255, 255, 255, 0.17);
+    transform: none;
+    filter: brightness(2.1);
 }
 
 #avatar-img{
