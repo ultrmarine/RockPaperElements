@@ -47,6 +47,8 @@
 
         </div>
         <!-- див с картинками хп -->
+        
+    <div class="top-ui">
         <div class="div-hp">
             <img class="img-hp" id="third-hp" src="assets\icons\red-hp.png">
             <img class="img-hp" id="second-hp" src="assets\icons\red-hp.png">
@@ -61,6 +63,10 @@
             <h1 class="text-round">ROUND</h1>
             <h1 id="text-round-count">1</h1>
         </div>
+        <div class="div-timer">
+            <h1 id="text-timer">TIME: 60 s </h1>
+        </div>
+    </div>
 
 
         <!-- див с ником игрока -->
@@ -73,6 +79,7 @@
         </div>
 
         <!-- див со всеми скиллами -->
+    <div class="skills-mana-wrapper">  <!-- чтобы были одним сранным элементом -->
         <div class="div-skills">
             <button id="first-skill-btn">Заблокировать противнику одну из чётырёх групп жестов на следующий ход - 4 маны</button>
             <div id="div-first-skill" style="display: none;">
@@ -88,16 +95,13 @@
             <button id="AllSkill-btn" data-allskill="invincible">Полная неуязвимость на 1 ход - 8 маны</button>
         </div>
         <!-- див с маной -->
-        <div class="div-mana">
-            <div id="div-mana-count"></div>
-            <h1 id="text-mana-count">2 mana</h1>
+        <div class="mana-container">
+            <div class="mana-fill" style="height: 40%"></div>
+            <div class="mana-text">2</div>
         </div>
-        <!-- див с временем -->
-        <div class="div-timer">
-            <h1 id="text-timer">TIME: 60 s </h1>
-        </div>
+    </div>
         
-        <button id="confirm-btn">Сonfirm</button>
+    <button id="confirm-btn">Сonfirm</button>
 
         <div class="div-gesture">
             <button id="btn-gesture1" class="gesture-btn" data-gesture="rock"><img src="assets/icons/камень.png"></button> 

@@ -109,7 +109,9 @@ body {
 
 /* игровой экран */
 #game-screen {
-    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100vh;
 }
 
 .div-avatar{
@@ -207,17 +209,13 @@ body {
 }
 
 .div-hp{
-    position: relative;
     margin: 20px;
     height: 100px;
 }
 
 .div-round{
-  position: relative;
-  left: -5%;
   color: white;
   text-align: center;
-  top: -10%;
   width: 150px;
   height: 100px;
   padding: 20px;
@@ -241,7 +239,6 @@ body {
 #text-round-count{
     position: relative;
     text-align: center;
-    top: -30px;
 }
 
 .img-hp{
@@ -260,48 +257,75 @@ body {
 }
 
 .div-skills{
-    position: absolute;
     background: white;
     border: red 5px solid;
     width: 711px;
     height: 450px;
-    margin: 30px;
-    top: 400px;
 }
 
 .skills-btn{
     position: relative;
 }
 
-.div-mana{
+.skills-mana-wrapper {
     position: absolute;
-    background: linear-gradient(pink, blue);
-    border: red 5px solid;
-    width: 90px;
-    height: 450px;
-    margin: 30px;
-    left: 750px;
-    top: 400px;
+
+    left: 40px;     
+    bottom: 85px;   
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
 }
 
-#div-mana-count{
+
+.mana-container {
     position: relative;
-    background-color: white;
-    width: 90px;
-    height: 350px;
+    width: 60px;
+    height: 300px;
+
+    background: rgba(20, 5, 40, 0.8);
+    border-radius: 20px;
+    border: 2px solid rgba(120, 0, 255, 0.6);
+
+    box-shadow:
+        inset 0 0 20px rgba(120, 0, 255, 0.6),
+        0 0 30px rgba(150, 50, 255, 0.8);
 }
 
-#text-mana-count{
+.mana-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-radius: 18px;
+
+    background: linear-gradient(
+        to top,
+        #6a00ff,
+        #b266ff
+    );
+    /* призыв анимации */
+    animation: manaPulse 2s infinite; 
+}
+/* анимация пульсации маны */
+@keyframes manaPulse {    
+    0%,100% { filter: brightness(1); }
+    50% { filter: brightness(1.4); }
+}
+
+.mana-text {
+    position: absolute;
+    top: -35px;
+    width: 100%;
     text-align: center;
-    color: white;
+    color: #e6d7ff;
+    font-weight: 700;
+    text-shadow: 0 0 10px #b266ff;
 }
 
 .div-timer{
-  position: relative;
-  left: 25%;
+
   color: white;
   text-align: center;
-  top: 2%;
   width: 150px;
   height: 100px;
   padding: 20px;
@@ -398,11 +422,8 @@ body {
 }
 
 .div-bot-hp{
-  position: relative;
-  left: 23%;
   color: white;
   text-align: center;
-  top: 10%;
   width: 150px;
   height: 100px;
   padding: 20px;
@@ -460,4 +481,16 @@ body {
     height: 500px;
     border: 1px red solid;
     background-color: white;
+}
+
+
+/* Вся верхняя панель кроме аватарки */
+.top-ui {
+    position: absolute;
+    top: 1vh;
+    left: 20vw;
+
+    display: flex;
+    align-items: center;
+    gap: 5vw;
 }
