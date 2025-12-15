@@ -62,10 +62,8 @@
     })
 
     socket.on("calcMana", (manaHeight,manaCount) => {
-        divManaCount.style.height = manaHeight + "%"
-        divManaCount.style.display = "flex"
-        textManaCount.style.display = "flex"
-        textManaCount.innerHTML = manaCount + " mana"
+        divManaCount[0].style.height = manaHeight + "%"
+        textManaCount[0].innerHTML = manaCount
     })
 
     socket.on("botTextSkill", (botSkill) =>{
@@ -124,8 +122,8 @@ const textRoundTotal = document.getElementById("text-round-total")
 const textRoundCount = document.getElementById("text-round-count")
 const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
 const textEnemyMove = document.getElementById("text-enemy-move")
-const divManaCount = document.getElementById("mana-fill")
-const textManaCount = document.getElementById("mana-text")
+const divManaCount = document.getElementsByClassName("mana-fill")
+const textManaCount = document.getElementsByClassName("mana-text")
 const textBotSkill = document.getElementById("text-bot-skill")
 const firstHp = document.getElementById("first-hp")
 const secondHp = document.getElementById("second-hp")

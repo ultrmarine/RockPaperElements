@@ -286,11 +286,11 @@ module.exports = function(io) {
         const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
         let avatar = ["assets/avatars/skeleton1.png","assets/avatars/skeleton2.png","assets/avatars/skeleton3.png"]
 
-        if (room.avatar[player] == "wizard"){
+        if (player.avatar == "wizard"){
             avatar = ["assets/avatars/wizard1.png","assets/avatars/wizard2.png","assets/avatars/wizard3.png"]
-        } else if(room.avatar[player] == "elemental"){
+        } else if(player.avatar == "elemental"){
             avatar = ["assets/avatars/elemental1.png","assets/avatars/elemental2.png","assets/avatars/elemental3.png"]
-        } else if(room.avatar[player] == "skeleton"){
+        } else if(player.avatar == "skeleton"){
             avatar = ["assets/avatars/skeleton1.png","assets/avatars/skeleton2.png","assets/avatars/skeleton3.png"]
         }
 
