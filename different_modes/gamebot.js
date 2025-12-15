@@ -284,14 +284,14 @@ module.exports = function(io) {
         if (!player) return
 
         const hp = ["assets/icons/red-hp.png","assets/icons/half-red-hp.png","assets/icons/empty-hp.png"]
-        let avatar = ["assets/avatars/skeleton1.jpg","assets/avatars/skeleton2.jpg","assets/avatars/skeleton3.jpg"]
+        let avatar = ["assets/avatars/skeleton1.png","assets/avatars/skeleton2.png","assets/avatars/skeleton3.png"]
 
-        if (player.avatar == "wizard"){
+        if (room.avatar[player] == "wizard"){
             avatar = ["assets/avatars/wizard1.png","assets/avatars/wizard2.png","assets/avatars/wizard3.png"]
-        } else if(player.avatar == "elemental"){
+        } else if(room.avatar[player] == "elemental"){
             avatar = ["assets/avatars/elemental1.png","assets/avatars/elemental2.png","assets/avatars/elemental3.png"]
-        } else if(player.avatar == "skeleton"){
-            avatar = ["assets/avatars/skeleton1.jpg","assets/avatars/skeleton2.jpg","assets/avatars/skeleton3.jpg"]
+        } else if(room.avatar[player] == "skeleton"){
+            avatar = ["assets/avatars/skeleton1.png","assets/avatars/skeleton2.png","assets/avatars/skeleton3.png"]
         }
 
         const testHp = {
@@ -446,7 +446,7 @@ module.exports = function(io) {
         const player = players.get(socket.id)
         if (!player) return
 
-        player.divManaHeight = 450 - (player.mana*50)
+        player.divManaHeight = (player.mana*10)
         socket.emit("calcMana",player.divManaHeight,player.mana)
         if (player.mana >= 10){
             player.mana = 10
