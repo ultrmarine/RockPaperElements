@@ -180,7 +180,7 @@ module.exports = function(io) {
                 botHpLose(socket)
                 player.selectSkill = 0
             } else{
-                socket.emit("roundStatus","Ты проиграл вамп вамп")
+                socket.emit("roundStatus","Ты проиграл")
                 playerHpLose(socket)
                 player.selectSkill = 0
             }
