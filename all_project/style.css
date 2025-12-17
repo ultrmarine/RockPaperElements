@@ -453,12 +453,19 @@ body {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-
+    
     padding: 10px;
     border-radius: 10px;
 
     background: rgba(10, 0, 20, 0.6);
     border: 1px dashed rgba(160, 100, 255, 0.4);
+}
+
+.first-skills-btn {
+    flex: 1 1 45%; /* 2 в ряд */
+    min-width: 140px;
+    padding: 8px 10px;
+    font-size: 13px;
 }
 
 .skills-mana-wrapper {
@@ -721,14 +728,6 @@ body {
 
 #avatar-img{
     height: 400px;
-}
-
-#div-first-skill{
-    position: relative;
-    width: 300px;
-    height: 100px;
-    border: red 5px solid;
-    background-color: gray;
 }
 
 .div-applied-skill{
