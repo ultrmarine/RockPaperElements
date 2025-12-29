@@ -52,6 +52,7 @@ module.exports = function(io) {
 
                 rooms[roomId] = {
                     player: [p1.id, p2.id],
+                    nickname: {[p1.id]: "Default user", [p2.id]: "Default user"},
                     hp: { [p1.id]: 6, [p2.id]: 6 },
                     avatar: { [p1.id]: undefined, [p2.id]: undefined},
                     confirmBtn: {[p1.id]: false, [p2.id]: false},
@@ -141,6 +142,22 @@ module.exports = function(io) {
             if (!room) return
 
             allSkills(socket,roomId,skill)
+        })
+
+        socket.on("sendMsg", ({roomId,msg}) =>{
+            const room = rooms[roomId] // проверка на руму
+            if (room.gameEnd) return
+            if (!room) return
+
+            getMsg(socket,roomId,msg)
+        })
+
+        socket.on("setNick", ({roomId,nick}) =>{
+            const room = rooms[roomId] // проверка на руму
+            if (room.gameEnd) return
+            if (!room) return
+            
+            room.nickname[socket.id] = nick
         })
     })
 
@@ -553,6 +570,17 @@ module.exports = function(io) {
 
         playerSocket1.emit("TextSkill", room.skill[p1])
         playerSocket2.emit("TextSkill", room.skill[p2])
+    }
+
+
+    function getMsg(socket,roomId,msg){
+        const room = rooms[roomId]
+        if (!room) return
+        if (room.gameEnd) return
+        if (msg == "") return
+
+        pvpGame.to(roomId).emit("getMSG", msg , room.nickname[socket.id])
+        
     }
 
 }

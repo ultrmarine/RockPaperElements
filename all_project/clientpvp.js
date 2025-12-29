@@ -15,6 +15,8 @@
         selectImg.style.display = "none"
         nickInp.style.display = "none"
         emit("AvatarImg", {roomId, avatar: avatar1})
+        funct.setNickname(nickInp.value)
+
     })
 
     funct = {
@@ -26,6 +28,8 @@
         firstSkill: (skill) => emit("firstSkill", {roomId,skill}),
         skills: (skill) => emit("skills", {roomId,skill}),
         trapChoice: (trap) => emit("trapChoice", {roomId,trap}),
+        sendMsg: (msg) => emit("sendMsg", {roomId,msg}),
+        setNickname: (nick) => emit("setNick", {roomId,nick})
     }
 
     socket.on("timerUpdate", (time) =>{
@@ -124,7 +128,18 @@
         textEnemySkill.innerHTML = enemySkill
     })
 
+    socket.on("getMSG", (msg,nickname) =>{
+        let p = document.createElement("p")
+        p.textContent = nickname + ": " + msg
+        divChat.appendChild(p)
+
+        divChat.scrollTop = divChat.scrollHeight;
+    })
+
 })()
+
+const divChat = document.getElementById("msg-block")
+const textChat = document.getElementById("text-chat")
 
 const firstSkillBtn = document.getElementById("first-skill-btn")
 const divFirstSkill = document.getElementById("div-first-skill")
@@ -187,6 +202,7 @@ multSearchBtn.addEventListener("click", () => {
     }
     funct.searchRoom()
     textNickname.innerHTML = nickInp.value
+    const nick = nickInp.value
     multSearchBtn.style.pointerEvents = "none"
     
 })
@@ -287,4 +303,17 @@ confirmBtn.addEventListener("click", ()=>{
 
 playAgainBtn.addEventListener("click", () =>{
     funct.playAgain()
+})
+
+
+
+// ЧАТ БЛОК
+
+const inpChat = document.getElementById("inp-chat")
+const btnChat = document.getElementById("chat-form")
+
+btnChat.addEventListener("submit", (e) =>{
+    e.preventDefault() //что бы не перезагружало страницу
+    funct.sendMsg(inpChat.value)
+    inpChat.value = ""
 })

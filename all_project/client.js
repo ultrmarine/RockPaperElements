@@ -200,6 +200,51 @@ gestureAllButtons.forEach((btn) => {
     })
 })
 
+// gestureAllButtons.forEach((btn) => {
+//     btn.addEventListener("mouseenter", () =>{
+//         if(btn.id.length <= 12){
+//                 arr_lenght = btn.id[btn.id.length - 1]
+//                 for (const gesture of gestureAllButtons){
+//                     if (gesture.id[gesture.id.length - 1] > arr_lenght){
+//                         const img = gesture.querySelector("img");
+//                         img.style.opacity = 0.3
+//                     }
+//                 }
+//             }
+//         for (const gesture of gestureAllButtons){
+            
+//             // console.log(gesture.id[gesture.id.length - 1])
+
+//         }
+//     })
+// })
+
+
+//отображение подсказок,что бъёт что
+gestureAllButtons.forEach((btn, index) => {
+    btn.addEventListener('mouseenter', () => {
+        gestureAllButtons.forEach((gesture, ind) => {
+            // вот эт нам нужно что бы замкнуть весь список и нормально всё это отображать
+            const distance = (ind - index + 16) % 16; 
+            const img = gesture.querySelector("img")
+            if (distance == 0 || distance <= 8) {
+                img.style.opacity = '1'
+            } else {
+                img.style.opacity = '0.33'
+            }
+        })
+    })
+
+    btn.addEventListener('mouseleave', () => {
+        gestureAllButtons.forEach(gesture => {
+            const img = gesture.querySelector("img")
+            img.style.opacity = '1'
+        });
+    });
+});
+
+
+
 confirmBtn.addEventListener("click", ()=>{
     if (playerGestureChoice != "-"){
         funct.confirm()

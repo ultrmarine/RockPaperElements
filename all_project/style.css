@@ -523,21 +523,20 @@ body {
 }
 
 .div-timer{
+    color: white;
+    text-align: center;
+    width: 150px;
+    height: 100px;
+    padding: 20px;
+    background: rgba(69, 7, 105, 0.14);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    border: 2px solid rgba(175, 3, 243, 0.45);
+    border-radius: 8px;
+    box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
 
-  color: white;
-  text-align: center;
-  width: 150px;
-  height: 100px;
-  padding: 20px;
-  background: rgba(69, 7, 105, 0.14);
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
-  border: 2px solid rgba(175, 3, 243, 0.45);
-  border-radius: 8px;
-  box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
-  
-  transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  cursor: pointer;
+    transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    cursor: pointer;
 }
 
 .div-timer:hover {
@@ -742,8 +741,7 @@ body {
     -webkit-backdrop-filter: blur(9px);
     border: 2px solid rgba(175, 3, 243, 0.45);
     border-radius: 8px;
-     box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
-  
+    box-shadow: 0 0 48px rgba(198, 3, 247, 0.568), 0 16px 64px rgba(31, 38, 135, 0.33999999999999997);
     transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
     cursor: pointer;
 }
@@ -775,3 +773,53 @@ body {
     display: flex;
     gap: clamp(16px, 4vw, 64px);
 }
+
+/* nu po другому никак ни сделать обращение к нескольким объёктам */
+
+/* Камень */
+/* #btn-gesture1:hover ~ #btn-gesture10 img,
+#btn-gesture1:hover ~ #btn-gesture11 img,
+#btn-gesture1:hover ~ #btn-gesture12 img,
+#btn-gesture1:hover ~ #btn-gesture13 img,
+#btn-gesture1:hover ~ #btn-gesture14 img,
+#btn-gesture1:hover ~ #btn-gesture15 img,
+#btn-gesture1:hover ~ #btn-gesture16 img{
+    opacity: 0.3;
+}
+
+#btn-gesture1:hover ~ #btn-gesture9 img{
+    background-color: red;
+    border-radius: 25%;
+} */
+
+/* Огонь */
+/* #btn-gesture2:hover ~ #btn-gesture11 img,
+#btn-gesture2:hover ~ #btn-gesture12 img,
+#btn-gesture2:hover ~ #btn-gesture13 img,
+#btn-gesture2:hover ~ #btn-gesture14 img,
+#btn-gesture2:hover ~ #btn-gesture15 img,
+#btn-gesture2:hover ~ #btn-gesture16 img,
+#btn-gesture2:hover ~ #btn-gesture1 img{
+    opacity: 0.3;
+}
+
+#btn-gesture2:hover ~ #btn-gesture10 img{
+    background-color: red;
+    border-radius: 25%;
+} */
+
+/* Ножницы */
+/* #btn-gesture2:hover ~ #btn-gesture11 img,
+#btn-gesture2:hover ~ #btn-gesture12 img,
+#btn-gesture2:hover ~ #btn-gesture13 img,
+#btn-gesture2:hover ~ #btn-gesture14 img,
+#btn-gesture2:hover ~ #btn-gesture15 img,
+#btn-gesture2:hover ~ #btn-gesture16 img,
+#btn-gesture2:hover ~ #btn-gesture1 img{
+    opacity: 0.3;
+}
+
+#btn-gesture2:hover ~ #btn-gesture10 img{
+    background-color: red;
+    border-radius: 25%;
+} */
