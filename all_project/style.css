@@ -583,7 +583,7 @@ body {
 #round-panel {
     width: clamp(320px, 60vw, 720px);
     padding: 40px 50px;
-
+    
     background:
         linear-gradient(
             180deg,

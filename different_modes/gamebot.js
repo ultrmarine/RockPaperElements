@@ -25,11 +25,12 @@ module.exports = function(io) {
             timerInterval: null, // ssilka na taimer dlja igroka
             intervalTimerEndRound: null, // ssilka na taimer mejdu raundami
             divManaHeight: 450, // razmer diva s manoi (мейби заменить на чёта стоит МИРОН ДЕЛАЙ CSS НУ ПЛИЗ НУ ПОЖАЛУЙТСА)
-            botChanceSkill1: 5,
-            botChanceSkill2: 5,
-            botChanceSkill3: 5,
-            botChanceSkipRound: 5,
-            botInvokerNum: null
+            botBlockGroupSkill: 50,
+            botIncDamageSkill: 50,
+            botHealSkill: 50,
+            botChanceSkipRound: 50,
+            botInvokerNum: null,
+            botBlockGrupp: null
         })
 
         socket.on("disconnect", function (){
@@ -65,6 +66,10 @@ module.exports = function(io) {
         socket.on("confirmBtn", () =>{
             const player = players.get(socket.id)
             if (!player) return
+            if (gesture_wins[player.gesture].includes(player.botBlockGrupp)){
+                socket.emit("Alert", "Вам запретили эту стихию!")
+                return
+            }
             roundEnd(socket)
         })
 
@@ -109,7 +114,7 @@ module.exports = function(io) {
 
         let defaultTimer = 60
         player.botChoose = botChooseGesture(player.blockGroupBot)
-        player.blockGroupBot = null
+        blockGroupBot = "-"
         player.timerInterval = setInterval(() => {
             defaultTimer--
             socket.emit("timerUpdate", defaultTimer)
@@ -149,38 +154,44 @@ module.exports = function(io) {
         const player = players.get(socket.id)
         if (!player) return
 
+        if (gesture_wins[player.gesture].includes(player.botBlockGrupp)){
+            return
+        }
+        // console.log(gesture_wins[player.gesture].includes("group1"))
+
         if(player.gesture != "-") {
             clearInterval(player.timerInterval)
             player.timerRun = false
             roundMana(socket)
             player.botCast = botCast(socket)
             botMana(socket)
-
+            player.blockGroupBot = null
             if (player.selectSkill == 8 && player.skill8PlayerChoice == player.botChoose){
                 // потом сделать,либо потерю хп,либо потерю маны
+                player.botMana -= 5
                 socket.emit("BotTrap")
-                player.skill8PlayerChoice = ""
+                player.skill8PlayerChoice = "-"
             }
 
             if (player.gesture == player.botChoose){
-                socket.emit("roundStatus", "У вас ничья")
+                socket.emit("roundStatus", "roundStatus.draw")
                 player.selectSkill = 0
             } else if(gesture_wins[player.gesture].includes(player.botChoose) && gesture_wins[player.botChoose].includes(player.gesture) && player.selectSkill != 7){ //ravnie по силе жесты проверка
                 //доработать
-                socket.emit("roundStatus","Сыграны равные по силе жесты вы оба теряете hp")
+                socket.emit("roundStatus","roundStatus.equalDamage")
                 playerHpLose(socket)
                 botHpLose(socket)
                 player.selectSkill = 0
             } else if (gesture_wins[player.gesture].includes(player.botChoose)){
-                    socket.emit("roundStatus","Ты выйграл")
+                    socket.emit("roundStatus","roundStatus.win")
 
                 if(player.selectSkill == 7 && gesture_wins[player.gesture].includes(playerGestureChoice)){
-                    socket.emit("roundStatus","Равный жест не сработал.Ты выйграл")
+                    socket.emit("roundStatus","roundStatus.equalDisabledWin")
                 }
                 botHpLose(socket)
                 player.selectSkill = 0
             } else{
-                socket.emit("roundStatus","Ты проиграл")
+                socket.emit("roundStatus","roundStatus.lose")
                 playerHpLose(socket)
                 player.selectSkill = 0
             }
@@ -353,38 +364,36 @@ module.exports = function(io) {
         const player = players.get(socket.id)
         if (!player) return
 
-        if (player.botMana >= 5 && player.hp <= 2 && player.botHp >= 3){
-            player.botChanceSkill2 += 2
-            player.botChanceSkill1 -= 1
-            player.botChanceSkill3 -= 1
+        if (player.botMana >= 5 && player.hp >= 2 && player.botHp >= 3){
+            player.botIncDamageSkill += 20
+            player.botBlockGroupSkill -= 10
+            player.botHealSkill -= 10
 
-            player.botChanceSkipRound -= 4
+            player.botChanceSkipRound -= 40
         }
         if (player.botHp <= 2 && player.botMana >= 4){
-            player.botChanceSkill1 += 3
-            player.botChanceSkill2 -= 3
-            player.botChanceSkill3 += 2
+            player.botBlockGroupSkill += 30
+            player.botIncDamageSkill -= 30
+            player.botHealSkill += 20
 
-            player.botChanceSkipRound -= 3
+            player.botChanceSkipRound -= 30
         }
         if (player.botHp <= 1 && player.botMana >= 5){
-            player.botChanceSkill1 -= 3
-            player.botChanceSkill2 -= 5
-            player.botChanceSkill3 += 5
+            player.botBlockGroupSkill -= 30
+            player.botIncDamageSkill -= 50
+            player.botHealSkill += 50
 
-            player.botChanceSkipRound -= 5
+            player.botChanceSkipRound -= 50
         }
         if (player.botHp >= 5 && player.mana <= 2 && player.botMana <=4){
-            player.botChanceSkipRound += 2
-        } else if(player.botHp >= 5 && player.mana <= 2){
-            player.botChanceSkipRound -= 3
+            player.botChanceSkipRound += 20
         }
 
         if (player.botMana <= 1){
             player.botChanceSkipRound += 999
-            player.botChanceSkill2 -= 999
-            player.botChanceSkill1 -= 999
-            player.botChanceSkill3 -= 999
+            player.botIncDamageSkill -= 999
+            player.botBlockGroupSkill -= 999
+            player.botHealSkill -= 999
         }
 
         if (player.botMana >= 9){
@@ -397,21 +406,21 @@ module.exports = function(io) {
         if (!player) return
 
         botChanceCalc(socket)
-        rand_skill1 = Math.random() * player.botChanceSkill1
-        rand_skill2 = Math.random() * player.botChanceSkill2
-        rand_skill3 = Math.random() * player.botChanceSkill2
+        rand_skillBlock = Math.random() * player.botBlockGroupSkill
+        rand_skillDamage = Math.random() * player.botIncDamageSkill
+        rand_skillHeal = Math.random() * player.botHealSkill
 
         rand_skipRound = Math.random() * player.botChanceSkipRound
 
-        player.botChanceSkill1 = 5
-        player.botChanceSkill2 = 5
-        player.botChanceSkill3 = 5
+        player.botBlockGroupSkill = 50
+        player.botIncDamageSkill = 50
+        player.botHealSkill = 50
 
-        if(rand_skill1 > rand_skill2 && rand_skill1 > rand_skill3 && rand_skill1 > rand_skipRound && player.botMana >= 4 ){
+        if(rand_skillBlock > rand_skillDamage && rand_skillBlock > rand_skillHeal && rand_skillBlock > rand_skipRound && player.botMana >= 4 ){
             return 1
-        } else if(rand_skill2 > rand_skill1 && rand_skill2 > rand_skill3 && rand_skill2 > rand_skipRound && player.botMana >= 5){
+        }else if(rand_skillDamage > rand_skillBlock && rand_skillDamage > rand_skillHeal && rand_skillDamage > rand_skipRound && player.botMana >= 5){
             return 2
-        }else if(rand_skill3 > rand_skill2 && rand_skill3 > rand_skill1 && rand_skill3 > rand_skipRound && player.botMana >= 5){
+        }else if(rand_skillHeal > rand_skillDamage && rand_skillHeal > rand_skillBlock && rand_skillHeal > rand_skipRound && player.botMana >= 5){
             return 3
         } else{
             return 10
@@ -424,21 +433,44 @@ module.exports = function(io) {
         if (!player) return
 
         player.botInvokerNum = botInvoker(socket)
-
         if(player.botInvokerNum == 1){
             player.botMana -= 4
-            socket.emit("botTextSkill","Бот пытался заблокировать вам 1 из 4 стихий,но разраб ничего не сделал")
-            // Придумать как заблокировать игроку одну из 4 стихий
+            // socket.emit("botTextSkill","Бот пытался заблокировать вам 1 из 4 стихий,но разраб ничего не сделал")  !!!СПУСТЯ 5 МЯСЕЦev СДЕЛАЛ!!! КРУТО???
+            const grupp = Math.floor(Math.random() * (4 - 1) + 1)
+            if (grupp == 1){
+                player.botBlockGrupp = "group1"
+                socket.emit("BlockGrupp", 1)
+                socket.emit("botTextSkill","Вам заблокировали красную стихию")
+                socket.emit("botTextSkill","botSkill.red")
+            }
+            if (grupp == 2){
+                player.botBlockGrupp = "group2"
+                socket.emit("BlockGrupp", 2)
+                socket.emit("botTextSkill","Вам заблокировали зелёную стихию")
+                socket.emit("botTextSkill","botSkill.green")
+            }
+            if (grupp == 3){
+                player.botBlockGrupp = "group3"
+                socket.emit("BlockGrupp", 3)
+                socket.emit("botTextSkill","Вам заблокировали синию стихию")
+                socket.emit("botTextSkill","botSkill.blue")
+            }
+            if (grupp == 4){
+                player.botBlockGrupp = "group4"
+                socket.emit("BlockGrupp", 4)
+                socket.emit("botTextSkill","Вам заблокировали жёлтую стихию")
+                socket.emit("botTextSkill","botSkill.yellow")
+            }
         } else if(player.botInvokerNum == 2){
             player.botMana -= 5
-            socket.emit("botTextSkill","Противник применил скилл: Увеличить урон!")
+            socket.emit("botTextSkill","botSkill.damage")
             return 2
         } else if(player.botInvokerNum == 3){
             player.botMana -= 5
             player.botHp += 1
-            socket.emit("botTextSkill","Противник применил скилл: Хилл")
+            socket.emit("botTextSkill","botSkill.heal")
         } else{
-            socket.emit("botTextSkill","Противник решил пропустить ход")
+            socket.emit("botTextSkill","botSkill.skip")
         }
     }
 
@@ -446,11 +478,12 @@ module.exports = function(io) {
         const player = players.get(socket.id)
         if (!player) return
 
-        player.divManaHeight = (player.mana*10)
-        socket.emit("calcMana",player.divManaHeight,player.mana)
         if (player.mana >= 10){
             player.mana = 10
         }
+
+        player.divManaHeight = (player.mana*10)
+        socket.emit("calcMana",player.divManaHeight,player.mana)
     }
 
     function roundMana(socket){

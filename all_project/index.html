@@ -6,34 +6,36 @@
     <title>Rock Paper Elements</title>
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
-    <script defer src="client.js"></script>
+	<script defer src="i18n.js"></script>
+	<script defer src="client.js"></script>
 </head>
 <body>
 
-
+<button id="lang-btn" onclick="setLanguage('ru')">RU</button>
+<button id="lang-btn" onclick="setLanguage('et')">EST</button>
 <!-- стартовое -->
     <div id="start-screen">
         <h1 class="title-name">Rock Paper Elements</h1>
-        <button id="start-btn">Start</button>
-        <button id="multiplayer-btn">Multiplayer</button>
+        <button data-i18n="start" id="start-btn">Start</button>
+        <button data-i18n="multiplayer" id="multiplayer-btn">Multiplayer</button>
         <button>TESTEST2</button>
     </div>
 
     <!-- мультиплеер -->
     <div id="multiplayer-screen" style="display: none;" >
-        <a href="indexpvp.html"><button id="search-multiplayer-btn">Search</button></a>
-        <button id="close-multiplayer-screen">BACK</button>
+        <a href="indexpvp.html"><button data-i18n="search" id="search-multiplayer-btn">Search</button></a>
+        <button data-i18n="closeBtn" id="close-multiplayer-screen">BACK</button>
     </div>
     
 
     <div id="pre-game-screen" style="display: none;" >
-        <button id="play-btn">PLAY</button>
-        <button id="close-pre-game-screen">BACK</button>
+        <button data-i18n="playBtn" id="play-btn">PLAY</button>
+        <button data-i18n="closeBtn" id="close-pre-game-screen">BACK</button>
         <input id="nick-input" type="text">
         <select name="avatarSelect" id="avatar-select">
-            <option value="skeleton">Скелет</option>
-            <option value="wizard">Волшебник</option>
-            <option value="elemental">Элементаль</option>
+            <option data-i18n="skeletonOp" value="skeleton">Скелет</option>
+            <option data-i18n="wizardOp" value="wizard">Волшебник</option>
+            <option data-i18n="elementalOp" value="elemental">Элементаль</option>
         </select>
     </div>
 
@@ -58,44 +60,44 @@
 
         <!-- див который показывает раунд -->
         <div class="div-round">
-            <h1 class="text-round">ROUND</h1>
+            <h1 data-i18n="round" class="text-round">ROUND</h1>
             <h1 id="text-round-count">1</h1>
         </div>
 
         <div class="div-bot-hp">
-            <h1 id="bot-hp">BOT HP 6</h1>
+            <h1 data-i18n="botHp" id="bot-hp">BOT HP 6</h1>
         </div>
         
         <div class="div-timer">
-            <h1 id="text-timer">TIME: 60 s </h1>
+            <h1 data-i18n="timer" id="text-timer">TIME: 60 s </h1>
         </div>
     </div>
 
 
         <!-- див с ником игрока -->
         <div class="div-nickname">
-            <h1 id="text-nickname">nickname</h1>
+            <h1 data-i18n="nickname" id="text-nickname">nickname</h1>
         </div>
 
         <div class="div-applied-skill">
-            <h1 id="text-applied-skill">No skills applied</h1>
+            <h1 data-i18n="skills" id="text-applied-skill">No skills applied</h1>
         </div>
 
         <!-- див со всеми скиллами -->
     <div class="skills-mana-wrapper">  <!-- чтобы были одним сранным элементом -->
         <div class="div-skills">
-            <button id="first-skill-btn">Заблокировать противнику одну из чётырёх групп жестов на следующий ход - 4 маны</button>
+            <button data-i18n="firstSkill"  id="first-skill-btn">Заблокировать противнику одну из чётырёх стихий на следующий ход - 4 маны</button>
             <div id="div-first-skill" style="display: none;">
-                <button class="first-skills-btn" data-firstskill="first">Первую группу жестов</button>
-                <button class="first-skills-btn" data-firstskill="second">Вторую группу жестов</button>
-                <button class="first-skills-btn" data-firstskill="third">Третью группу жестов</button>
-                <button class="first-skills-btn" data-firstskill="fourth">Четвёртую группу жестов</button>
+                <button data-i18n="group1" class="first-skills-btn" data-firstskill="first">Первую группу жестов</button>
+                <button data-i18n="group2" class="first-skills-btn" data-firstskill="second">Вторую группу жестов</button>
+                <button data-i18n="group3" class="first-skills-btn" data-firstskill="third">Третью группу жестов</button>
+                <button data-i18n="group4" class="first-skills-btn" data-firstskill="fourth">Четвёртую группу жестов</button>
             </div>
-            <button id="AllSkill-btn" data-allskill="damage">Увеличить свой урон на 1,но и проходящий по себе урон на 1 на этот раунд - 3 маны</button>
-            <button id="AllSkill-btn" data-allskill="heal">Отхил на 1 хп - 5 маны</button>
-            <button id="AllSkill-btn" data-allskill="equalGesture">Отключить "равные жесты" для противника - 2 маны</button>
-            <button id="AllSkill-btn" data-allskill="trap">Поставить ловушку на жест выбраный жест - 4 маны</button>
-            <button id="AllSkill-btn" data-allskill="invincible">Полная неуязвимость на 1 ход - 8 маны</button>
+            <button data-i18n="SkillDmg" id="AllSkill-btn" data-allskill="damage">Увеличить свой урон на 1,но и проходящий по себе урон на 1 на этот раунд - 3 маны</button>
+            <button data-i18n="SkillHeal" id="AllSkill-btn" data-allskill="heal">Отхил на 1 хп - 5 маны</button>
+            <button data-i18n="SkillGesture" id="AllSkill-btn" data-allskill="equalGesture">Отключить "равные жесты" для противника - 2 маны</button>
+            <button data-i18n="SkillTrap" id="AllSkill-btn" data-allskill="trap">Поставить ловушку на жест выбраный жест - 4 маны</button>
+            <button data-i18n="SkillInv" id="AllSkill-btn" data-allskill="invincible">Полная неуязвимость на 1 ход - 8 маны</button>
         </div>
         <!-- див с маной -->
         <div class="mana-container">
@@ -104,7 +106,7 @@
         </div>
     </div>
         
-    <button id="confirm-btn">Сonfirm</button>
+    <button data-i18n="confirm" id="confirm-btn">Сonfirm</button>
 
         <div class="div-gesture">
             <button id="btn-gesture1" class="gesture-btn" data-gesture="rock"><img src="assets/icons/камень.png"></button> 
@@ -125,7 +127,7 @@
             <button id="btn-gesture16" class="gesture-btn" data-gesture="pistol"><img src="assets/icons/пистолет.png"></button>
         </div>
 
-        <h1 id="text-player-choice">
+        <h1 data-i18n="choice" id="text-player-choice">
             Твой выбор: >>>
         </h1>
 
@@ -135,13 +137,13 @@
             <h1 id="text-enemy-move">Противник сыграл ладошку</h1>
             <h1 id="text-round-total">Ты победил ну или проиграл я хз</h1>
             <h1 id="text-bot-skill">Противник применил скилл: </h1>
-            <h1 id="text-timer-round-screen">TIME: 5 s </h1>
+            <h1 data-i18n="timerNext" id="text-timer-round-screen">TIME: 5 s </h1>
             </div>
         </div>
 
         <div id="lose-win-screen" style="display: none;">
             <h1 id="lose-win-text">Ты проиграл</h1>
-            <button id="play-again-btn">СЫГРАТЬ ЗАНОВА</button>
+            <button data-i18n="PlayAgain" id="play-again-btn">СЫГРАТЬ ЗАНОВА</button>
         </div>
       </div>
     </div>

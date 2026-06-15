@@ -17,32 +17,32 @@
     }
 
     socket.on("timerUpdate", (time) =>{
-        textTimer.innerHTML = `TIME: ${time} s`
+        textTimer.textContent = t("timer", { time })
     })
 
     socket.on("roundStatus", (data) => {
-        textRoundTotal.innerHTML = data
+        textRoundTotal.textContent = t(data)
     })
 
     socket.on("roundScreenState", (roundCount, botChoose) =>{
         if (roundScreen.style.display == "none"){
             roundScreen.style.display = 'flex'
         }
-        textRoundCount.innerHTML = roundCount
-        textRoundScreen.innerHTML = "Конец " + (roundCount-1) + " раунда"
-        textEnemyMove.innerHTML = "Противник сыграл " + botChoose
+       textRoundCount.textContent = roundCount
+        textRoundScreen.textContent = t("roundEnd", { round: roundCount - 1 })
+        textEnemyMove.textContent = t("enemyMove", { gesture: gestureName(botChoose) })
         gameScreen.style.pointerEvents = "none"  
     })
 
     socket.on("EndTimerUpdate", (data) => {
-        textTimerRound.innerHTML = "TIME: " + data +" s"
+        textTimerRound.textContent = t("timerNext", { time: data })
     })
 
     socket.on("EndTimerClose", () => {
         roundScreen.style.display = 'none'
         gameScreen.style.pointerEvents = "auto"
-        textTimerRound.innerHTML = "TIME: 5 s"
-        textTimer.innerHTML = `TIME: 60 s`
+        textTimerRound.textContent = t("timerNext", { time: 5 })
+        textTimer.textContent = t("timer", { time: 60 })
     })
 
     socket.on("testHp", (hp1,hp2,hp3,avatar) =>{
@@ -54,7 +54,7 @@
     })
 
     socket.on("botHpStatus", (botHp) =>{
-        BotHpText.innerHTML = "BOT HP "+ botHp
+        BotHpText.textContent = t("botHp", { hp: botHp })
     })
 
     socket.on("TextSkill", (skill)=>{
@@ -63,19 +63,19 @@
 
     socket.on("calcMana", (manaHeight,manaCount) => {
         divManaCount[0].style.height = manaHeight + "%"
-        textManaCount[0].innerHTML = manaCount
+        textManaCount[0].textContent = manaCount
     })
 
     socket.on("botTextSkill", (botSkill) =>{
-        textBotSkill.innerHTML = botSkill
+        textBotSkill.textContent = t(botSkill)
     })
 
     socket.on("selectSkillMsg", () =>{
-        alert("Недостаточно маны или применён другой скилл!")
+        alert(t("selectSkillAlert"))
     })
 
     socket.on("BotTrap", () =>{
-        alert("БОТ ПОПАЛ В ЛОВУШКУ")
+        alert(t("botTrapAlert"))
     })
 
     socket.on("gameFullRestart", () =>{
@@ -83,18 +83,53 @@
         startScreen.style.display = 'flex'
         loseWinScreen.style.display = "none"
         gameScreen.style.display = 'none'
-        BotHpText.innerHTML = "BOT HP 6"
+        BotHpText.textContent = t("botHp", { hp: 6 })
     })
 
     socket.on("loseGame", () =>{
-        loseWinText.innerHTML = "Ты проиграл"
+        loseWinText.textContent = t("loseGame")
         loseWinScreen.style.display = "flex"
     })
 
     socket.on("winGame", () =>{
-        loseWinText.innerHTML = "Ты выйграл!!!"
+        loseWinText.textContent = t("winGame")
         loseWinScreen.style.display = "flex"
     })
+
+    socket.on("BlockGrupp", (grupp) => {
+        gestureAllButtons.forEach((btn, index) => {
+            const img = btn.querySelector("img")
+            if (grupp == 1){
+                if (index <= 3) {
+                    img.style.backgroundColor = 'red'
+                    img.style.borderRadius = "10px"
+                }
+            }
+            if (grupp == 2){
+                if (index > 3 & index <= 7) {
+                    img.style.backgroundColor = 'red'
+                    img.style.borderRadius = "10px"
+                }
+            }
+            if (grupp == 3){
+                if (index > 7 & index <= 11) {
+                    img.style.backgroundColor = 'red'
+                    img.style.borderRadius = "10px"
+                }
+            }
+            if (grupp == 4){
+                if (index > 11) {
+                    img.style.backgroundColor = 'red'
+                    img.style.borderRadius = "10px"
+                }
+            }
+        });
+    })
+
+    socket.on("Alert", (msg) => {
+        alert(msg)
+    })
+
 })()
 
 
@@ -140,6 +175,21 @@ const multiplayerBtn = document.getElementById("multiplayer-btn")
 const multiplayerScreen = document.getElementById("multiplayer-screen")
 const closeMultiplayerScreen = document.getElementById("close-multiplayer-screen")
 
+const btnLang = document.querySelectorAll('#lang-btn');
+
+btnLang.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        location.reload()
+    })
+})
+    
+
+gestureAllButtons.forEach((button) => {
+    const label = gestureName(button.dataset.gesture)
+    button.title = label
+    button.setAttribute("aria-label", label)
+})
+
 multiplayerBtn.addEventListener("click", () => {
     startScreen.style.display = 'none'
     multiplayerScreen.style.display = "flex"
@@ -153,16 +203,20 @@ closeMultiplayerScreen.addEventListener("click", () => {
 startBtn.addEventListener('click', () => {
     startScreen.style.display = 'none'
     preGameScreen.style.display = 'flex'
+    btnLang[0].style.display = 'none'
+    btnLang[1].style.display = 'none'
 })
 
 closePreGameScreen.addEventListener('click', () => {
     startScreen.style.display = 'flex'
     preGameScreen.style.display = 'none'
+    btnLang[0].style.display = 'flex'
+    btnLang[1].style.display = 'flex'
 })
 
 playBtn.addEventListener('click', () => {
     if (nickInp.value == ""){
-        nickInp.value = "Default user"
+        nickInp.value = t("defaultUser")
         return
     }
     if (selectImg.value == "wizard"){
@@ -178,7 +232,7 @@ playBtn.addEventListener('click', () => {
         funct.setAvatar("skeleton")
     }
     funct.startTimer()
-    textNickname.innerHTML = nickInp.value
+    textNickname.textContent = nickInp.value
     gameScreen.style.display = 'flex'
     preGameScreen.style.display = 'none'
     
@@ -196,7 +250,7 @@ gestureAllButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
         playerGestureChoice = btn.dataset.gesture
         funct.chooseGesture(playerGestureChoice)
-        textPlayerChoice.innerHTML = "Твой выбор: " + playerGestureChoice
+        textPlayerChoice.textContent = t("choice", { gesture: gestureName(playerGestureChoice) })
     })
 })
 
@@ -249,47 +303,50 @@ confirmBtn.addEventListener("click", ()=>{
     if (playerGestureChoice != "-"){
         funct.confirm()
     } else{
-        alert("Для подтверждения нужно выбрать жест")
+        alert(t("chooseGestureAlert"))
     }
+
+    gestureAllButtons.forEach((btn) => {
+            const img = btn.querySelector("img")
+            img.style.backgroundColor = 'transparent'
+        })
 })
 
 function textSkills(skill){
     const pickSkill = skill
+    let text = t("noSkills")
     let top = "0px"
     let fontSize = "25px"
 
-    if (pickSkill == 0) {
-        text = "No skills applied"
-        top = "0px"
+    if (pickSkill == 0 || pickSkill == undefined) {
+        text = t("noSkills")
         fontSize = "40px"
     } else if (pickSkill >= 1 && pickSkill <= 4) {
-        // та же самая тема,что и в питоне,только нужны эти ублюдские скобки который я не знаю как ставить на английской клаве
-        text = `На следующий раунд заблокирована ${pickSkill} группа жестов`
+        text = t("skillBlockGroup", { group: pickSkill })
     } else if (pickSkill == 5) {
-        text = "На этот раунд ваш урон и проходящий по вам урон увеличен на 1 "
+        text = t("skillDamage")
         top = "-20px"
         fontSize = "30px"
     } else if (pickSkill == 6) {
-        pickSkill = 0
         top = "0px"
         fontSize = "40px"
-        text = "Вы похилились на 1 хп!"
+        text = t("skillHeal")
         setTimeout(() => {
-            textSkills()
-        }, "3000");
+            textSkills(0)
+        }, 3000)
     } else if (pickSkill == 7) {
-        text = "Вы отключили равные жесты противнику"
+        text = t("skillEqualGesture")
     } else if (pickSkill == 8) {
         top = "-20px"
         fontSize = "40px"
-        text = `Вы поставили ловушку на жест ${playerGestureChoice}`
+        text = t("skillTrap", { gesture: gestureName(playerGestureChoice) })
     } else if (pickSkill == 9) {
         top = "-35px"
         fontSize = "45px"
-        text = `У вас полная неуязвимость :)`
+        text = t("skillInvincible")
     }
 
-    textAppliedSkill.innerHTML = text
+    textAppliedSkill.textContent = text
     textAppliedSkill.style.top = top
     textAppliedSkill.style.fontSize = fontSize
 }
@@ -314,7 +371,7 @@ allSkillsBtn.forEach(button =>{
         if (button.dataset.allskill != "trap"){
             funct.skills(button.dataset.allskill)
         } else if (button.dataset.allskill === "trap"){
-            let confirmBtn = confirm(`Вы точно хотите поставить ловушку на ${playerGestureChoice}?`)
+            let confirmBtn = confirm(t("trapConfirm", { gesture: gestureName(playerGestureChoice) }))
             if (confirmBtn){
                 funct.trapChoice(playerGestureChoice)
             }
@@ -324,5 +381,6 @@ allSkillsBtn.forEach(button =>{
 
 playAgainBtn.addEventListener("click", () =>{
     funct.playAgain()
+    btnLang[0].style.display = 'flex'
+    btnLang[1].style.display = 'flex'
 })
-
