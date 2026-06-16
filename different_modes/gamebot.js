@@ -60,6 +60,7 @@ module.exports = function(io) {
         socket.on("startTimer", () =>{
             const player = players.get(socket.id)
             if (!player) return
+            socket.emit("botHpStatus",player.botHp)
             startRoundTimer(socket)
         })
 

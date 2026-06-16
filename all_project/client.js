@@ -177,6 +177,7 @@ const closeMultiplayerScreen = document.getElementById("close-multiplayer-screen
 
 const btnLang = document.querySelectorAll('#lang-btn');
 
+
 btnLang.forEach((btn) => {
     btn.addEventListener("click", () => {
         location.reload()
@@ -203,6 +204,9 @@ closeMultiplayerScreen.addEventListener("click", () => {
 startBtn.addEventListener('click', () => {
     startScreen.style.display = 'none'
     preGameScreen.style.display = 'flex'
+    textTimerRound.textContent = t("timerNext", { time: 5 });
+    // BotHpText.textContent = "botHp", { hp: 6 }
+    // textTimer.textContent = "timer", { time: 60 }
     btnLang[0].style.display = 'none'
     btnLang[1].style.display = 'none'
 })
